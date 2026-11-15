@@ -1,0 +1,3008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#191919">
+  <title id="photos-window-title">Photos</title>
+  
+  <!-- Embedded Self-Hosted Inter Variable Font: 100% zero-latency, zero-FOUT typography on Frame 0 -->
+  <link rel="preload" href="assets/fonts/Inter-Latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="fonts.css">
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Early Browser Theme Detection -->
+  <script>
+    (function() {
+      try {
+        localStorage.removeItem('theme_preference');
+        var isBrowserLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        var theme = isBrowserLight ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', isBrowserLight ? '#f4f4f4' : '#191919');
+      } catch (e) {}
+    })();
+  </script>
+  
+  <style>
+    /* ==========================================================================
+       Windows 11 Photos App Theme & Layout Tokens
+       ========================================================================== */
+    :root {
+      --photos-titlebar-bg: #202020;
+      --photos-titlebar-border: rgba(255, 255, 255, 0.08);
+      --photos-canvas-bg: #0c0c0c;
+      --photos-bottombar-bg: #1c1c1c;
+      --photos-bottombar-border: rgba(255, 255, 255, 0.08);
+      --photos-text-primary: #ffffff;
+      --photos-text-secondary: rgba(255, 255, 255, 0.65);
+      --photos-btn-hover: rgba(255, 255, 255, 0.08);
+      --photos-btn-active: rgba(255, 255, 255, 0.12);
+      --photos-accent-blue: #0078d4;
+      --photos-accent-cyan: #24a3de;
+      --photos-filmstrip-bg: rgba(28, 28, 28, 0.85);
+      --photos-filmstrip-border: rgba(255, 255, 255, 0.12);
+      --photos-pill-bg: rgba(32, 32, 32, 0.82);
+      --photos-pill-border: rgba(255, 255, 255, 0.14);
+      --photos-info-panel-bg: #202020;
+      --photos-info-panel-border: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-theme="light"] {
+      --photos-titlebar-bg: #f3f3f3;
+      --photos-titlebar-border: rgba(0, 0, 0, 0.08);
+      --photos-canvas-bg: #e6e6e6;
+      --photos-bottombar-bg: #f8f8f8;
+      --photos-bottombar-border: rgba(0, 0, 0, 0.08);
+      --photos-text-primary: #111111;
+      --photos-text-secondary: rgba(0, 0, 0, 0.6);
+      --photos-btn-hover: rgba(0, 0, 0, 0.06);
+      --photos-btn-active: rgba(0, 0, 0, 0.1);
+      --photos-accent-blue: #0067b8;
+      --photos-accent-cyan: #0078d4;
+      --photos-filmstrip-bg: rgba(245, 245, 245, 0.9);
+      --photos-filmstrip-border: rgba(0, 0, 0, 0.12);
+      --photos-pill-bg: rgba(245, 245, 245, 0.88);
+      --photos-pill-border: rgba(0, 0, 0, 0.14);
+      --photos-info-panel-bg: #f9f9f9;
+      --photos-info-panel-border: rgba(0, 0, 0, 0.12);
+    }
+
+    /* Base Reset for App Window */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden !important;
+      overflow-x: hidden !important;
+      position: fixed;
+      inset: 0;
+      font-family: 'Segoe UI Variable', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background: var(--photos-canvas-bg);
+      color: var(--photos-text-primary);
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Entire Photos App Viewport Stage */
+    .photos-app-window {
+      width: 100vw;
+      max-width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      inset: 0;
+      background: var(--photos-canvas-bg);
+      overflow: hidden !important;
+      overflow-x: hidden !important;
+    }
+
+    /* ==========================================================================
+       1. Top Bar / Titlebar (Tools, Filename & Window Controls)
+       ========================================================================== */
+    .photos-titlebar {
+      height: 44px;
+      min-height: 44px;
+      background: var(--photos-titlebar-bg);
+      border-bottom: 1px solid var(--photos-titlebar-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px 0 10px;
+      position: relative;
+      z-index: 50;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .photos-titlebar-tools {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    /* Action Toolbar Buttons */
+    .photos-tool-btn {
+      height: 32px;
+      padding: 0 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      color: var(--photos-text-primary);
+      font-size: 12px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .photos-tool-btn:hover {
+      background: var(--photos-btn-hover);
+    }
+
+    .photos-tool-btn:active {
+      background: var(--photos-btn-active);
+    }
+
+    .photos-tool-btn--edit {
+      border: 1px solid var(--photos-titlebar-border);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0 10px;
+      font-weight: 500;
+    }
+
+    .photos-tool-btn--icon-only {
+      width: 32px;
+      padding: 0;
+    }
+
+    .photos-tool-icon {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+      pointer-events: none;
+    }
+
+    /* Center Title / Current Filename */
+    .photos-titlebar-center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 12.5px;
+      font-weight: 400;
+      color: var(--photos-text-primary);
+      pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 34vw;
+      letter-spacing: 0.01em;
+    }
+
+    /* Right Action Group: 'Open with' & Caption Controls */
+    .photos-titlebar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .photos-open-with-wrapper {
+      position: relative;
+    }
+
+    .photos-open-with-btn {
+      height: 30px;
+      padding: 0 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--photos-titlebar-border);
+      border-radius: 4px;
+      color: var(--photos-text-primary);
+      font-size: 12px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+
+    .photos-open-with-btn:hover {
+      background: var(--photos-btn-hover);
+    }
+
+    /* Windows 11 Caption Controls */
+    .photos-caption-controls {
+      display: flex;
+      align-items: center;
+      margin-left: 4px;
+    }
+
+    .photos-caption-btn {
+      width: 44px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: var(--photos-text-primary);
+      font-size: 11px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.12s ease, color 0.12s ease;
+    }
+
+    .photos-caption-btn:hover {
+      background: var(--photos-btn-hover);
+    }
+
+    .photos-caption-btn--close:hover {
+      background: #c42b1c !important;
+      color: #ffffff !important;
+    }
+
+    /* Category Switcher Dropdown (Inside 'Open with') */
+    .photos-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 6px;
+      width: 220px;
+      background: var(--photos-titlebar-bg);
+      border: 1px solid var(--photos-titlebar-border);
+      border-radius: 6px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      padding: 6px 0;
+      display: none;
+      flex-direction: column;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+    }
+
+    .photos-dropdown-menu.is-open {
+      display: flex;
+    }
+
+    .photos-dropdown-header {
+      padding: 6px 14px 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--photos-text-secondary);
+    }
+
+    .photos-dropdown-item {
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--photos-text-primary);
+      text-decoration: none;
+      font-size: 12.5px;
+      transition: background-color 0.12s ease;
+      cursor: pointer;
+    }
+
+    .photos-dropdown-item:hover {
+      background: var(--photos-btn-hover);
+    }
+
+    .photos-dropdown-item.is-current {
+      color: var(--photos-accent-cyan);
+      font-weight: 600;
+    }
+
+    /* ==========================================================================
+       2. Main Canvas Viewport (The Photo Display Stage)
+       ========================================================================== */
+    .photos-canvas-stage {
+      flex: 1 1 auto;
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--photos-canvas-bg);
+      overflow: hidden;
+      cursor: default;
+    }
+
+    /* Main Image Wrapper */
+    .photos-media-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      padding: 24px 20px 84px; /* Space reserved above bottom filmstrip */
+      touch-action: none;
+    }
+
+    .photos-main-image {
+      max-width: 90vw;
+      max-height: calc(100vh - 190px);
+      object-fit: contain;
+      border-radius: 2px;
+      box-shadow: 0 12px 38px rgba(0, 0, 0, 0.65);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
+      will-change: transform, opacity;
+      pointer-events: auto;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* Zoom & Pan Cursor Engine */
+    html.is-zoomed-pan .photos-canvas-stage,
+    html.is-zoomed-pan .photos-media-container,
+    html.is-zoomed-pan .photos-main-image {
+      cursor: grab !important;
+    }
+
+    html.is-panning,
+    html.is-panning * {
+      cursor: grabbing !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+
+    /* While in grab mode or actively panning over the photo, hide custom cursor so authentic native hand cursor is shown */
+    html.is-zoomed-pan.cursor-grab-active .custom-cursor__ring-wrap,
+    html.is-zoomed-pan.cursor-grab-active .custom-cursor__trail-wrap,
+    html.is-panning .custom-cursor__ring-wrap,
+    html.is-panning .custom-cursor__trail-wrap {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    /* When zoomed in, narrow the edge hover zone so image dragging is uninhibited across the viewport */
+    html.is-zoomed-pan .photos-edge-nav-zone {
+      pointer-events: none;
+      width: 72px;
+    }
+    html.is-zoomed-pan .photos-nav-pill-btn {
+      pointer-events: auto;
+    }
+
+    /* ==========================================================================
+       3. Left & Right Edge Hover Navigation Zones
+       ========================================================================== */
+    .photos-edge-nav-zone {
+      position: absolute;
+      top: 0;
+      bottom: 76px;
+      width: 80px;
+      display: flex;
+      align-items: center;
+      z-index: 30;
+      pointer-events: none;
+    }
+
+    .photos-edge-nav-zone--prev {
+      left: 0;
+      justify-content: flex-start;
+      padding-left: 20px;
+    }
+
+    .photos-edge-nav-zone--next {
+      right: 0;
+      justify-content: flex-end;
+      padding-right: 20px;
+    }
+
+    /* Floating Vertical Navigation Capsule (Matches Windows 11 Photos Reference) */
+    .photos-nav-pill-btn {
+      width: 32px;
+      height: 72px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(45, 45, 45, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 8px;
+      padding: 0;
+      color: #e5e5e5;
+      cursor: pointer;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      transform: scale(0.96);
+      transition: opacity 0.2s ease, transform 0.2s ease, background-color 0.15s ease, border-color 0.15s ease;
+      pointer-events: auto;
+      user-select: none;
+    }
+
+    [data-theme="light"] .photos-nav-pill-btn {
+      background: rgba(225, 225, 225, 0.78);
+      border-color: rgba(0, 0, 0, 0.09);
+      color: #222222;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Reveal when mouse enters the edge zone or hovers the button */
+    .photos-nav-pill-btn.is-edge-hovered,
+    .photos-edge-nav-zone:hover .photos-nav-pill-btn,
+    .photos-nav-pill-btn:hover {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .photos-nav-pill-btn:hover {
+      background: rgba(62, 62, 62, 0.92);
+      border-color: rgba(255, 255, 255, 0.22);
+      transform: scale(1.05);
+    }
+
+    [data-theme="light"] .photos-nav-pill-btn:hover {
+      background: rgba(245, 245, 245, 0.95);
+      border-color: rgba(0, 0, 0, 0.18);
+    }
+
+    .photos-nav-pill-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* ==========================================================================
+       4. Bottom Filmstrip / Thumbnail Queue
+       ========================================================================== */
+    .photos-filmstrip-wrapper {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--photos-filmstrip-bg);
+      border: 1px solid var(--photos-filmstrip-border);
+      border-radius: 8px;
+      padding: 5px 8px;
+      max-width: min(92vw, 860px);
+      overflow-x: auto;
+      overflow-y: hidden;
+      z-index: 40;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+      transition: opacity 0.2s ease, transform 0.25s ease;
+    }
+
+    .photos-filmstrip-wrapper::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .photos-filmstrip-wrapper::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+    }
+
+    /* Individual Filmstrip Thumbnail */
+    .photos-thumbnail-card {
+      width: 76px;
+      height: 48px;
+      flex-shrink: 0;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      background: #111111;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      outline: 2px solid transparent;
+      outline-offset: 1px;
+      opacity: 0.72;
+      transition: opacity 0.18s ease, transform 0.18s ease, outline 0.18s ease, border-color 0.18s ease;
+    }
+
+    .photos-thumbnail-card:hover {
+      opacity: 1;
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Active Thumbnail Highlight: Bright Cyan / Blue Outline */
+    .photos-thumbnail-card.is-active {
+      opacity: 1;
+      outline: 2px solid var(--photos-accent-cyan);
+      outline-offset: 1px;
+      transform: scale(1.02);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .photos-thumbnail-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    /* ==========================================================================
+       5. Bottom Status & Control Bar
+       ========================================================================== */
+    .photos-bottombar {
+      height: 42px;
+      min-height: 42px;
+      background: var(--photos-bottombar-bg);
+      border-top: 1px solid var(--photos-bottombar-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 12px;
+      position: relative;
+      z-index: 50;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    /* Bottom Left: Format Badge, Resolution, Size */
+    .photos-bottombar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--photos-text-secondary);
+      font-size: 11.5px;
+    }
+
+    .photos-format-badge {
+      display: inline-block;
+      padding: 1px 6px;
+      border: 1px solid var(--photos-titlebar-border);
+      border-radius: 3px;
+      font-family: ui-monospace, monospace;
+      font-size: 10.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--photos-text-primary);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    /* Bottom Center: Info & Fit View Icons */
+    .photos-bottombar-center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Bottom Right: Zoom Controls & Fullscreen */
+    .photos-bottombar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .photos-zoom-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .photos-zoom-value-btn {
+      background: transparent;
+      border: none;
+      color: var(--photos-text-primary);
+      font-size: 11.5px;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .photos-zoom-value-btn:hover {
+      background: var(--photos-btn-hover);
+    }
+
+    .photos-zoom-group.is-disabled {
+      opacity: 0.35;
+      pointer-events: none;
+      filter: grayscale(1);
+    }
+
+    /* Windows 11 Styled Zoom Range Slider */
+    .photos-zoom-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 90px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    [data-theme="light"] .photos-zoom-slider {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .photos-zoom-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--photos-accent-cyan);
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+      transition: transform 0.12s ease;
+    }
+
+    .photos-zoom-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    /* ==========================================================================
+       6. Info / File Properties Flyout Panel (Toggled strictly via ⓘ button)
+       ========================================================================== */
+    .photos-info-flyout {
+      position: fixed;
+      top: 44px;
+      right: 0;
+      bottom: 42px;
+      width: 320px;
+      max-width: 85vw;
+      background: var(--photos-info-panel-bg);
+      border-left: 1px solid var(--photos-info-panel-border);
+      box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5);
+      z-index: 99;
+      padding: 20px;
+      overflow-y: auto;
+      display: none;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateX(100%);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+
+    .photos-info-flyout.is-open {
+      display: block;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    .photos-info-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .photos-info-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--photos-text-primary);
+    }
+
+    .photos-info-close {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--photos-text-secondary);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .photos-info-close:hover {
+      background: var(--photos-btn-hover);
+      color: var(--photos-text-primary);
+    }
+
+    .photos-info-row {
+      margin-bottom: 14px;
+    }
+
+    .photos-info-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--photos-text-secondary);
+      margin-bottom: 3px;
+    }
+
+    .photos-info-val {
+      font-size: 13px;
+      color: var(--photos-text-primary);
+      word-break: break-all;
+    }
+
+    /* ==========================================================================
+       Custom Windows 11 Photos Video Control Bar
+       ========================================================================== */
+    .photos-video-controls {
+      position: absolute;
+      bottom: 84px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      width: min(88vw, 680px);
+      height: 46px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 14px;
+      background: var(--photos-filmstrip-bg);
+      border: 1px solid var(--photos-filmstrip-border);
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      z-index: 45;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), bottom 0.25s ease;
+    }
+
+    .photos-video-controls.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    [data-theme="light"] .photos-video-controls {
+      background: rgba(245, 245, 245, 0.92);
+      border-color: rgba(0, 0, 0, 0.12);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .vctrl-btn {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      color: var(--photos-text-primary);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background-color 0.15s ease, transform 0.1s ease;
+    }
+
+    .vctrl-btn:hover {
+      background: var(--photos-btn-hover);
+    }
+
+    .vctrl-btn:active {
+      transform: scale(0.94);
+    }
+
+    .vctrl-icon {
+      width: 15px;
+      height: 15px;
+      display: block;
+      pointer-events: none;
+    }
+
+    .vctrl-time {
+      font-size: 11.5px;
+      font-variant-numeric: tabular-nums;
+      font-family: inherit;
+      color: var(--photos-text-secondary);
+      white-space: nowrap;
+      user-select: none;
+      flex-shrink: 0;
+      letter-spacing: 0.02em;
+    }
+
+    .vctrl-timeline-wrap {
+      flex: 1 1 auto;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+      touch-action: none;
+    }
+
+    .vctrl-timeline-track {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      position: relative;
+      transition: height 0.15s ease;
+    }
+
+    [data-theme="light"] .vctrl-timeline-track {
+      background: rgba(0, 0, 0, 0.18);
+    }
+
+    .vctrl-timeline-wrap:hover .vctrl-timeline-track,
+    .vctrl-timeline-wrap.is-scrubbing .vctrl-timeline-track {
+      height: 6px;
+    }
+
+    .vctrl-timeline-buffered {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 0%;
+      background: rgba(255, 255, 255, 0.28);
+      border-radius: 2px;
+      pointer-events: none;
+      transition: width 0.2s ease;
+    }
+
+    [data-theme="light"] .vctrl-timeline-buffered {
+      background: rgba(0, 0, 0, 0.22);
+    }
+
+    .vctrl-timeline-progress {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 0%;
+      background: var(--photos-accent-cyan);
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
+    .vctrl-timeline-thumb {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+      transform: translate(-50%, -50%) scale(0.8);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+
+    [data-theme="light"] .vctrl-timeline-thumb {
+      background: var(--photos-accent-cyan);
+    }
+
+    .vctrl-timeline-wrap:hover .vctrl-timeline-thumb,
+    .vctrl-timeline-wrap.is-scrubbing .vctrl-timeline-thumb {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.15);
+    }
+
+    .vctrl-volume-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .vctrl-volume-slider-box {
+      width: 60px;
+      display: flex;
+      align-items: center;
+    }
+
+    .vctrl-volume-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    [data-theme="light"] .vctrl-volume-slider {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .vctrl-volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--photos-accent-cyan);
+      cursor: pointer;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+    }
+
+    /* ==========================================================================
+       Unified True Fullscreen Stage Styles
+       ========================================================================== */
+    .photos-app-window.is-fullscreen .photos-filmstrip-wrapper,
+    :fullscreen .photos-filmstrip-wrapper {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    .photos-app-window.is-fullscreen .photos-bottombar,
+    :fullscreen .photos-bottombar {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    .photos-app-window.is-fullscreen .photos-media-container,
+    :fullscreen .photos-media-container {
+      padding: 0 !important;
+      margin: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+    }
+
+    .photos-app-window.is-fullscreen .photos-main-image,
+    .photos-app-window.is-fullscreen #photos-main-video,
+    :fullscreen .photos-main-image,
+    :fullscreen #photos-main-video {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      object-fit: contain !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+
+    .photos-app-window.is-fullscreen .photos-canvas-stage,
+    :fullscreen .photos-canvas-stage {
+      height: 100vh !important;
+      max-height: 100vh !important;
+      width: 100vw !important;
+      max-width: 100vw !important;
+    }
+
+    .photos-app-window.is-fullscreen .photos-edge-nav-zone,
+    :fullscreen .photos-edge-nav-zone {
+      bottom: 0 !important;
+    }
+
+    .photos-app-window.is-fullscreen .photos-video-controls,
+    :fullscreen .photos-video-controls {
+      bottom: 32px !important;
+      width: min(84vw, 760px) !important;
+    }
+
+    .photos-app-window.is-fullscreen .photos-titlebar,
+    :fullscreen .photos-titlebar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(20, 20, 20, 0.92);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transform: translateY(-100%);
+      opacity: 0;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    }
+
+    [data-theme="light"].photos-app-window.is-fullscreen .photos-titlebar,
+    [data-theme="light"] :fullscreen .photos-titlebar {
+      background: rgba(243, 243, 243, 0.92);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .photos-app-window.is-fullscreen .photos-titlebar.is-hovered,
+    .photos-app-window.is-fullscreen .photos-titlebar:hover,
+    :fullscreen .photos-titlebar.is-hovered,
+    :fullscreen .photos-titlebar:hover {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Mobile Responsive Adaptation */
+    @media (max-width: 640px) {
+      .photos-titlebar-tools .photos-tool-btn:not(.photos-tool-btn--edit):not(#tool-rotate-btn) {
+        display: none;
+      }
+      .photos-titlebar-center {
+        display: none;
+      }
+      .photos-bottombar-left span:not(.photos-format-badge) {
+        display: none;
+      }
+      .photos-zoom-slider {
+        display: none;
+      }
+      .photos-thumbnail-card {
+        width: 62px;
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="photos-app-window" id="photos-app-window">
+    
+    <!-- 1. Top Titlebar & Action Toolbar -->
+    <header class="photos-titlebar" id="photos-titlebar">
+      
+      <!-- Left Action Buttons -->
+      <div class="photos-titlebar-tools">
+        
+        <!-- [Edit] Button with Image/Pencil Icon -->
+        <button type="button" class="photos-tool-btn photos-tool-btn--edit" id="tool-edit-btn" aria-label="Edit image">
+          <svg class="photos-tool-icon" viewBox="0 0 16 16">
+            <rect x="2" y="2" width="12" height="12" rx="1.5"/>
+            <circle cx="5.5" cy="5.5" r="1.25"/>
+            <path d="M14 10.5L10.5 7L4 13.5"/>
+            <path d="M11 2.5L13.5 5"/>
+          </svg>
+          <span>Edit</span>
+        </button>
+
+        <!-- Rotate Button -->
+        <button type="button" class="photos-tool-btn photos-tool-btn--icon-only" id="tool-rotate-btn" aria-label="Rotate 90 degrees">
+          <svg class="photos-tool-icon" viewBox="0 0 16 16">
+            <path d="M13.5 7.5A5.5 5.5 0 1 1 8 2.5c2 0 3.7.9 4.8 2.3"/>
+            <path d="M13.5 2v3h-3"/>
+          </svg>
+        </button>
+
+        <!-- Delete / Trash Button -->
+        <button type="button" class="photos-tool-btn photos-tool-btn--icon-only" id="tool-delete-btn" aria-label="Delete">
+          <svg class="photos-tool-icon" viewBox="0 0 16 16">
+            <path d="M3 4.5h10M6 4.5V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1.5M12.5 4.5v9a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-9"/>
+          </svg>
+        </button>
+
+        <!-- Print Button -->
+        <button type="button" class="photos-tool-btn photos-tool-btn--icon-only" id="tool-print-btn" aria-label="Print">
+          <svg class="photos-tool-icon" viewBox="0 0 16 16">
+            <path d="M4 5.5V2h8v3.5M4 11h8v3H4zM3 6.5h10a1.5 1.5 0 0 1 1.5 1.5v3H1.5V8A1.5 1.5 0 0 1 3 6.5z"/>
+          </svg>
+        </button>
+
+        <!-- Share Button -->
+        <button type="button" class="photos-tool-btn photos-tool-btn--icon-only" id="tool-share-btn" aria-label="Share">
+          <svg class="photos-tool-icon" viewBox="0 0 16 16">
+            <path d="M10 2.5h3.5V6M8.5 7.5L13.5 2.5M6.5 4H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V9.5"/>
+          </svg>
+        </button>
+
+        <!-- More Options (...) Button -->
+        <button type="button" class="photos-tool-btn photos-tool-btn--icon-only" id="tool-more-btn" aria-label="See more">
+          <svg class="photos-tool-icon" viewBox="0 0 16 16">
+            <circle cx="3.5" cy="8" r="1.25" fill="currentColor"/>
+            <circle cx="8" cy="8" r="1.25" fill="currentColor"/>
+            <circle cx="12.5" cy="8" r="1.25" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Center: Current Filename -->
+      <div class="photos-titlebar-center" id="photos-filename-title"></div>
+
+      <!-- Right: Open with & Window Caption Controls -->
+      <div class="photos-titlebar-right">
+        
+        <!-- 'Open ⌵' Dropdown Button -->
+        <div class="photos-open-with-wrapper">
+          <button type="button" class="photos-open-with-btn" id="open-with-btn" aria-expanded="false" aria-haspopup="true">
+            <span>Open</span>
+            <svg style="width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2;" viewBox="0 0 12 12">
+              <path d="M2.5 4.5L6 8L9.5 4.5"/>
+            </svg>
+          </button>
+          
+          <!-- Category Quick-Switch Dropdown -->
+          <div class="photos-dropdown-menu" id="open-with-menu" role="menu">
+            <span class="photos-dropdown-header">Switch Directory</span>
+            <a href="category.html?type=static-creatives" class="photos-dropdown-item" data-category="static-creatives" role="menuitem">
+              <span>📱</span> Static Creatives
+            </a>
+            <a href="category.html?type=motion-graphics" class="photos-dropdown-item" data-category="motion-graphics" role="menuitem">
+              <span>🎞️</span> Motion Graphics
+            </a>
+            <a href="category.html?type=reels-video" class="photos-dropdown-item" data-category="reels-video" role="menuitem">
+              <span>🎬</span> Reels &amp; Video
+            </a>
+            <a href="category.html?type=ad-campaigns" class="photos-dropdown-item" data-category="ad-campaigns" role="menuitem">
+              <span>🏔️</span> Ad Campaigns
+            </a>
+            <a href="category.html?type=3d-works" class="photos-dropdown-item" data-category="3d-works" role="menuitem">
+              <span>🔮</span> 3D Works
+            </a>
+          </div>
+        </div>
+
+        <!-- Window Caption Controls: Minimize, Maximize, Close -->
+        <div class="photos-caption-controls">
+          <button type="button" class="photos-caption-btn photos-caption-btn--minimize" id="caption-minimize-btn" aria-label="Minimize">
+            —
+          </button>
+          <button type="button" class="photos-caption-btn photos-caption-btn--maximize" id="caption-maximize-btn" aria-label="Maximize" title="Maximize">
+            <svg viewBox="0 0 10 10" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.1" style="pointer-events: none; display: block; margin: auto;">
+              <rect x="0.5" y="0.5" width="9" height="9" rx="0.5" />
+            </svg>
+          </button>
+          <button type="button" class="photos-caption-btn photos-caption-btn--close" id="caption-close-btn" aria-label="Close to Archive">
+            ✕
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 2. Main Media Viewport Stage -->
+    <main class="photos-canvas-stage" id="photos-canvas-stage">
+      
+      <!-- Left Edge Navigation Zone (Triggered on edge hover) -->
+      <div class="photos-edge-nav-zone photos-edge-nav-zone--prev" id="edge-nav-prev-zone">
+        <button type="button" class="photos-nav-pill-btn" id="photos-nav-prev-btn" aria-label="Previous image" title="Previous">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor" style="pointer-events: none; display: block; margin-right: 2px;">
+            <path d="M11.5 2.8c0-.7-.8-1.2-1.4-.8L2.6 6.4c-.6.4-.6 1.3 0 1.7l7.5 4.4c.6.4 1.4-.1 1.4-.8V2.8z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Center Main Media Container -->
+      <div class="photos-media-container" id="photos-media-container">
+        <img id="photos-main-image" class="photos-main-image" alt="Active Work" draggable="false" style="display: none;">
+        <video id="photos-main-video" class="photos-main-image" autoplay loop playsinline draggable="false" style="display: none; background: #000; outline: none; cursor: pointer;"></video>
+      </div>
+
+      <!-- Custom Windows 11 Photos Video Control Bar (No redundant maximize button; controls show on hover anywhere) -->
+      <div class="photos-video-controls" id="photos-video-controls" role="toolbar" aria-label="Video playback controls" style="display: none;">
+        <!-- Play / Pause Button -->
+        <button type="button" class="vctrl-btn" id="vctrl-play-btn" aria-label="Play / Pause" title="Play / Pause (Space)">
+          <svg class="vctrl-icon" id="vctrl-play-icon" viewBox="0 0 16 16" style="display: none;">
+            <path d="M4.5 2.8c0-.7.8-1.2 1.4-.8l7.5 4.4c.6.4.6 1.3 0 1.7l-7.5 4.4c-.6.4-1.4-.1-1.4-.8V2.8z" fill="currentColor"/>
+          </svg>
+          <svg class="vctrl-icon" id="vctrl-pause-icon" viewBox="0 0 16 16" style="display: block;">
+            <path d="M4 3h2.5v10H4zm5.5 0H12v10H9.5z" fill="currentColor"/>
+          </svg>
+        </button>
+
+        <!-- Time Display: 0:00 / 0:00 -->
+        <span class="vctrl-time" id="vctrl-time-text">0:00 / 0:00</span>
+
+        <!-- Timeline / Scrubber Track -->
+        <div class="vctrl-timeline-wrap" id="vctrl-timeline-wrap" role="slider" aria-label="Video timeline seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="vctrl-timeline-track" id="vctrl-timeline-track">
+            <div class="vctrl-timeline-buffered" id="vctrl-timeline-buffered"></div>
+            <div class="vctrl-timeline-progress" id="vctrl-timeline-progress"></div>
+            <div class="vctrl-timeline-thumb" id="vctrl-timeline-thumb"></div>
+          </div>
+        </div>
+
+        <!-- Volume / Mute Button & Slider -->
+        <div class="vctrl-volume-group" id="vctrl-volume-group">
+          <button type="button" class="vctrl-btn" id="vctrl-mute-btn" aria-label="Mute / Unmute" title="Mute / Unmute (M)">
+            <svg class="vctrl-icon" id="vctrl-vol-high-icon" viewBox="0 0 16 16">
+              <path d="M8 2.5L4.5 5.5H2a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h2.5L8 13.5v-11z" fill="currentColor"/>
+              <path d="M10.5 5a4.5 4.5 0 0 1 0 6M12.5 3a7.5 7.5 0 0 1 0 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            <svg class="vctrl-icon" id="vctrl-vol-muted-icon" viewBox="0 0 16 16" style="display: none;">
+              <path d="M8 2.5L4.5 5.5H2a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h2.5L8 13.5v-11z" fill="currentColor"/>
+              <line x1="11" y1="5.5" x2="15" y2="10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="15" y1="5.5" x2="11" y2="10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <div class="vctrl-volume-slider-box">
+            <input type="range" class="vctrl-volume-slider" id="vctrl-volume-slider" min="0" max="1" step="0.05" value="1" aria-label="Volume level">
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Edge Navigation Zone (Triggered on edge hover) -->
+      <div class="photos-edge-nav-zone photos-edge-nav-zone--next" id="edge-nav-next-zone">
+        <button type="button" class="photos-nav-pill-btn" id="photos-nav-next-btn" aria-label="Next image" title="Next">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor" style="pointer-events: none; display: block; margin-left: 2px;">
+            <path d="M4.5 2.8c0-.7.8-1.2 1.4-.8l7.5 4.4c.6.4.6 1.3 0 1.7l-7.5 4.4c-.6.4-1.4-.1-1.4-.8V2.8z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- 3. Bottom Filmstrip / Thumbnail Queue -->
+      <nav class="photos-filmstrip-wrapper" id="photos-filmstrip-wrapper" aria-label="Image queue">
+        <!-- Dynamically injected thumbnails based on category -->
+      </nav>
+
+    </main>
+
+    <!-- 4. Bottom Information & Control Bar -->
+    <footer class="photos-bottombar" id="photos-bottombar">
+      
+      <!-- Bottom Left: Format Badge, Resolution, Size -->
+      <div class="photos-bottombar-left">
+        <!-- Filmstrip icon -->
+        <svg class="photos-tool-icon" viewBox="0 0 16 16">
+          <rect x="2" y="3" width="12" height="10" rx="1.5"/>
+          <path d="M5.5 3v10M10.5 3v10"/>
+        </svg>
+        <span class="photos-format-badge" id="bottom-format-badge">PNG</span>
+        <span id="bottom-dimensions-val">1920 x 1080</span>
+        <span id="bottom-filesize-val">1.9 MB</span>
+      </div>
+
+      <!-- Bottom Center: Info Icon -->
+      <div class="photos-bottombar-center">
+        <!-- Info button -->
+        <button type="button" class="photos-tool-btn photos-tool-btn--icon-only" id="bottom-info-btn" aria-label="File information">
+          <svg class="photos-tool-icon" viewBox="0 0 16 16">
+            <circle cx="8" cy="8" r="6"/>
+            <path d="M8 7v4M8 5h.01"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Bottom Right: Filmstrip Strip, Zoom Slider & Fullscreen -->
+      <div class="photos-bottombar-right">
+        
+        <!-- Toggle Filmstrip button -->
+        <button type="button" class="photos-tool-btn photos-tool-btn--icon-only" id="toggle-filmstrip-btn" aria-label="Toggle filmstrip">
+          <svg class="photos-tool-icon" viewBox="0 0 16 16">
+            <rect x="2" y="3.5" width="12" height="9" rx="1"/>
+            <path d="M2 10.5h12"/>
+          </svg>
+        </button>
+
+        <!-- Zoom Group: Percentage, Minus, Slider, Plus -->
+        <div class="photos-zoom-group">
+          <button type="button" class="photos-zoom-value-btn" id="zoom-value-btn">
+            <span id="zoom-percentage-text">74%</span>
+            <svg style="width: 8px; height: 8px; fill: none; stroke: currentColor; stroke-width: 2;" viewBox="0 0 12 12">
+              <path d="M2.5 4.5L6 8L9.5 4.5"/>
+            </svg>
+          </button>
+          
+          <!-- Zoom Out (-) -->
+          <button type="button" class="photos-tool-btn photos-tool-btn--icon-only" id="zoom-out-btn" aria-label="Zoom out">
+            <svg class="photos-tool-icon" viewBox="0 0 16 16">
+              <circle cx="7.5" cy="7.5" r="4.5"/>
+              <path d="M5.5 7.5h4M11 11l3 3"/>
+            </svg>
+          </button>
+
+          <!-- Range Slider -->
+          <input type="range" class="photos-zoom-slider" id="zoom-range-slider" min="30" max="250" value="74" aria-label="Zoom level">
+
+          <!-- Zoom In (+) -->
+          <button type="button" class="photos-tool-btn photos-tool-btn--icon-only" id="zoom-in-btn" aria-label="Zoom in">
+            <svg class="photos-tool-icon" viewBox="0 0 16 16">
+              <circle cx="7.5" cy="7.5" r="4.5"/>
+              <path d="M5.5 7.5h4M7.5 5.5v4M11 11l3 3"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Fullscreen Button -->
+        <button type="button" class="photos-tool-btn photos-tool-btn--icon-only" id="fullscreen-btn" aria-label="Full screen">
+          <svg class="photos-tool-icon" viewBox="0 0 16 16">
+            <path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/>
+          </svg>
+        </button>
+
+      </div>
+    </footer>
+
+    <!-- 5. Info / File Properties Flyout Panel -->
+    <aside class="photos-info-flyout" id="photos-info-flyout" aria-label="Image Properties" aria-hidden="true">
+      <div class="photos-info-header">
+        <h2 class="photos-info-title">File Info</h2>
+        <button type="button" class="photos-info-close" id="photos-info-close-btn" aria-label="Close info panel">✕</button>
+      </div>
+
+      <div class="photos-info-row">
+        <div class="photos-info-label">File Name</div>
+        <div class="photos-info-val" id="info-file-name"></div>
+      </div>
+
+      <div class="photos-info-row">
+        <div class="photos-info-label">Category Archive</div>
+        <div class="photos-info-val" id="info-category-name"></div>
+      </div>
+
+      <div class="photos-info-row">
+        <div class="photos-info-label">Dimensions</div>
+        <div class="photos-info-val" id="info-dimensions"></div>
+      </div>
+
+      <div class="photos-info-row">
+        <div class="photos-info-label">File Size</div>
+        <div class="photos-info-val" id="info-filesize"></div>
+      </div>
+
+      <div class="photos-info-row">
+        <div class="photos-info-label">Format / Bit Depth</div>
+        <div class="photos-info-val" id="info-format"></div>
+      </div>
+
+      <div class="photos-info-row">
+        <div class="photos-info-label">Creative Workflow</div>
+        <div class="photos-info-val" id="info-workflow"></div>
+      </div>
+
+      <div class="photos-info-row">
+        <div class="photos-info-label">Curated Concept</div>
+        <div class="photos-info-val" id="info-concept"></div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- JavaScript: Windows 11 Photos App Engine -->
+  <script>
+    (function() {
+      'use strict';
+
+      // ========================================================================
+      // 0. Bulletproof Session Storage Wrappers (Works seamlessly on file:/// and servers)
+      // ========================================================================
+      function safeSessionSet(k, v) {
+        try {
+          if (typeof window !== 'undefined' && window.sessionStorage) {
+            window.sessionStorage.setItem(k, v);
+          }
+        } catch (e) {}
+      }
+
+      function safeSessionGet(k) {
+        try {
+          if (typeof window !== 'undefined' && window.sessionStorage) {
+            return window.sessionStorage.getItem(k);
+          }
+          return null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function safeSessionRemove(k) {
+        try {
+          if (typeof window !== 'undefined' && window.sessionStorage) {
+            window.sessionStorage.removeItem(k);
+          }
+        } catch (e) {}
+      }
+
+      // ========================================================================
+      // 1. Data Store: Verified Media Assets for Each Category
+      // ========================================================================
+      const CATEGORY_ITEMS = {
+  "3d-works": [
+    {
+      "filename": "3D_Amaron_EFB_Simulation.mp4",
+      "workflow": "Cinema 4D / Octane Render / PBR Shaders",
+      "concept": "High-fidelity 3D CGI simulation with dynamic camera movement, volumetric sunlight, and physically based rendering.",
+      "video": "assets/3d_first.mp4",
+      "image": "assets/3d_first_poster.jpg",
+      "thumb": "assets/3d_first_thumb.jpg",
+      "dimensions": "1920 x 1080",
+      "size": "53.4 MB",
+      "format": "MP4"
+    },
+    {
+      "filename": "Architectural_Pass_Church.jpg",
+      "workflow": "Architectural Pre-visualization / Global Illumination",
+      "concept": "Atmospheric architectural study exploring natural volumetric lighting and high-contrast interior depth.",
+      "image": "assets/3d_church.jpg",
+      "thumb": "assets/3d_church_thumb.jpg",
+      "dimensions": "1920 x 1080",
+      "size": "258 KB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Amaron_EFB_Component_Assembly.mp4",
+      "workflow": "Precision Industrial CGI / Exploded Engineering Rig",
+      "concept": "Detailed exploded-view engineering animation demonstrating battery structural layers and internal cell chemistry.",
+      "video": "assets/3d_amaron_assembly.mp4",
+      "image": "assets/3d_amaron_assembly_poster.jpg",
+      "thumb": "assets/3d_amaron_assembly_thumb.jpg",
+      "dimensions": "1920 x 1080",
+      "size": "7.2 MB",
+      "format": "MP4"
+    },
+    {
+      "filename": "Battery_Forest_Cinematic_Simulation.mp4",
+      "workflow": "Octane Environmental Scatter & Volumetric Lighting",
+      "concept": "Cinematic battery module set in lush overgrown forest floor with natural sunbeam shafts and organic foliage.",
+      "video": "assets/3d_battery_forest.mp4",
+      "image": "assets/3d_battery_forest_poster.jpg",
+      "thumb": "assets/3d_battery_forest_thumb.jpg",
+      "dimensions": "1920 x 1080",
+      "size": "8.6 MB",
+      "format": "MP4"
+    },
+    {
+      "filename": "Audio_Hardware_Headphones_Turntable.mp4",
+      "workflow": "Commercial Product Visualization / Studio Keylighting",
+      "concept": "Clean 360-degree commercial turntable showcase highlighting brushed metallic textures and acoustic craftsmanship.",
+      "video": "assets/3d_headphones.mp4",
+      "image": "assets/3d_headphones_poster.jpg",
+      "thumb": "assets/3d_headphones_thumb.jpg",
+      "dimensions": "1920 x 1920",
+      "size": "2.7 MB",
+      "format": "MP4"
+    },
+    {
+      "filename": "Nocturnal_Atmospheric_Environment.mp4",
+      "workflow": "Cinematic Atmosphere / Low-Key Specular Pass",
+      "concept": "Nocturnal architectural mood study balancing cool ambient moonlight against warm localized point illuminations.",
+      "video": "assets/3d_night_render.mp4",
+      "image": "assets/3d_night_render_poster.jpg",
+      "thumb": "assets/3d_night_render_thumb.jpg",
+      "dimensions": "1280 x 720",
+      "size": "10.2 MB",
+      "format": "MP4"
+    },
+    {
+      "filename": "Industrial_Warehouse_Spatial_Pass.jpg",
+      "workflow": "High-Contrast Interior Lighting / Volumetric Fog",
+      "concept": "Sprawling industrial warehouse interior exploring cavernous geometric perspective and raytraced reflections.",
+      "image": "assets/3d_warehouse.jpg",
+      "thumb": "assets/3d_warehouse_thumb.jpg",
+      "dimensions": "1920 x 1080",
+      "size": "161 KB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Brutalist_Arch_Light_Study.jpg",
+      "workflow": "Form Exploration / Natural Shadow Dispersion",
+      "concept": "Monolithic concrete forms defined by hard diagonal sunlight slicing across raw textural surfaces.",
+      "image": "assets/3d_interior_study.jpg",
+      "thumb": "assets/3d_interior_study_thumb.jpg",
+      "dimensions": "1920 x 1080",
+      "size": "134 KB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Character_Lookdev_Portrait.jpg",
+      "workflow": "Subsurface Scattering / Stylized Character Shading",
+      "concept": "Cinematic character rendering featuring multi-layer skin diffusion and rim light separation.",
+      "image": "assets/3d_character_pass.jpg",
+      "thumb": "assets/3d_character_pass_thumb.jpg",
+      "dimensions": "960 x 540",
+      "size": "78 KB",
+      "format": "JPG"
+    }
+  ],
+  "static-creatives": [
+    {
+      "filename": "Static_Creative_Campaign_01.jpg",
+      "workflow": "Commercial Art Direction / Typography & Retouching",
+      "concept": "High-impact editorial static creative crafted with precision hierarchy and commercial aesthetic.",
+      "image": "assets/sm_first.jpg",
+      "thumb": "assets/sm_first_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "865 KB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Brand_Storytelling_Key_Visual_15.jpg",
+      "workflow": "Brand Narrative Architecture / Color Harmony",
+      "concept": "Vibrant commercial key visual engineered for high engagement across digital brand touchpoints.",
+      "image": "assets/sm_15.jpg",
+      "thumb": "assets/sm_15_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "1.9 MB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Commercial_Lookbook_Spread_16.jpg",
+      "workflow": "Multi-Asset Campaign Cohesion / Layout Hierarchy",
+      "concept": "Minimalist editorial composition highlighting product form factor and premium modern typography.",
+      "image": "assets/sm_16.jpg",
+      "thumb": "assets/sm_16_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "1.5 MB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Panoramic_Brand_Creative_03.jpg",
+      "workflow": "Panoramic Composition / Wide-Angle Storytelling",
+      "concept": "Expansive wide-format promotional design balancing spacious negative space with bold focal elements.",
+      "image": "assets/sm_3.jpg",
+      "thumb": "assets/sm_3_thumb.jpg",
+      "dimensions": "2880 x 1440",
+      "size": "1.1 MB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Social_Identity_Frame_09.jpg",
+      "workflow": "Social Engagement Strategy / Clean Art Direction",
+      "concept": "Crisp typographic balance with bold corporate contrast engineered for immediate feed impact.",
+      "image": "assets/sm_9_02.jpg",
+      "thumb": "assets/sm_9_02_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "1.2 MB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Fathers_Day_Campaign_Creative.jpg",
+      "workflow": "Seasonal Promotional Design / Emotional Storytelling",
+      "concept": "Heartfelt thematic campaign graphic communicating brand warmth through curated iconography and copy.",
+      "image": "assets/sm_fathers_day.jpg",
+      "thumb": "assets/sm_fathers_day_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "932 KB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Packaging_Label_Identity_System.jpg",
+      "workflow": "Physical Brand Packaging / Vector Label Architecture",
+      "concept": "Precision product label graphic design adhering to print production tolerances and brand guidelines.",
+      "image": "assets/sm_label.jpg",
+      "thumb": "assets/sm_label_thumb.jpg",
+      "dimensions": "1402 x 1122",
+      "size": "421 KB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Matrix_Security_Infrastructure_Poster.jpg",
+      "workflow": "Enterprise Corporate Identity / Tech Graphics",
+      "concept": "Sophisticated technological visual identity emphasizing enterprise reliability and network resilience.",
+      "image": "assets/sm_matrix_security.jpg",
+      "thumb": "assets/sm_matrix_security_thumb.jpg",
+      "dimensions": "2880 x 3880",
+      "size": "1.1 MB",
+      "format": "JPG"
+    },
+    {
+      "filename": "RF_Digital_Flagship_Creative.jpg",
+      "workflow": "Digital Flagship Graphics / Modern Contrast",
+      "concept": "Contemporary digital banner with sleek color grading and balanced layout composition.",
+      "image": "assets/sm_rf.jpg",
+      "thumb": "assets/sm_rf_thumb.jpg",
+      "dimensions": "2880 x 1620",
+      "size": "589 KB",
+      "format": "JPG"
+    },
+    {
+      "filename": "WhatSmart_Campaign_Explainer.jpg",
+      "workflow": "Educational Consumer Design / Infographic Clarity",
+      "concept": "Clear, digestible infographic creative distilling product benefits into striking modular compartments.",
+      "image": "assets/sm_whatsmart.jpg",
+      "thumb": "assets/sm_whatsmart_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "916 KB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Dermatological_Skincare_Infographic.jpg",
+      "workflow": "Wellness Brand Aesthetics / Scientific Typography",
+      "concept": "Clean healthcare lifestyle visual balancing scientific authority with approachable skincare guidance.",
+      "image": "assets/sm_why_skin_dry.jpg",
+      "thumb": "assets/sm_why_skin_dry_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "959 KB",
+      "format": "JPG"
+    }
+  ],
+  "motion-graphics": [
+    {
+      "filename": "Kinetic_Typography_Reel_01.mp4",
+      "workflow": "Adobe After Effects / Kinetic Typography / Vector Motion",
+      "concept": "Expressive fluid type animation engineered for rhythm, impact, and modern digital brand communication.",
+      "video": "assets/mg_first.mp4",
+      "image": "assets/mg_first_poster.jpg",
+      "thumb": "assets/mg_first_thumb.jpg",
+      "dimensions": "1080 x 1920",
+      "size": "4.5 MB",
+      "format": "MP4"
+    },
+    {
+      "filename": "Dynamic_Motion_Brand_Campaign.mp4",
+      "workflow": "Kinetic Motion Design / Animated Social Rollout",
+      "concept": "Rhythmic vector transitions, dynamic kinetic lower-thirds, and stylized brand typography.",
+      "video": "assets/mg_comp1.mp4",
+      "image": "assets/mg_comp1_poster.jpg",
+      "thumb": "assets/mg_comp1_thumb.jpg",
+      "dimensions": "1080 x 1920",
+      "size": "2.1 MB",
+      "format": "MP4"
+    }
+  ],
+  "reels-video": [
+    {
+      "filename": "Cinematic_Pacing_Reel_01.mp4",
+      "workflow": "Premiere Pro / DaVinci Resolve / Audio-Reactive Editing",
+      "concept": "Fast-paced cinematic montage with rhythmic cuts, sound design sync, and stylized color grading.",
+      "video": "assets/vids_first.mp4",
+      "image": "assets/vids_first_poster.jpg",
+      "thumb": "assets/vids_first_thumb.jpg",
+      "dimensions": "1080 x 1920",
+      "size": "9.0 MB",
+      "format": "MP4"
+    },
+    {
+      "filename": "Fashion_Editorial_Motion_13.mp4",
+      "workflow": "High-Fashion Narrative / Filmic Color Palette",
+      "concept": "Moody editorial fashion sequences cut to deliberate acoustic rhythm with vintage lens character.",
+      "video": "assets/vids_13.mp4",
+      "image": "assets/vids_13_poster.jpg",
+      "thumb": "assets/vids_13_thumb.jpg",
+      "dimensions": "1080 x 1920",
+      "size": "22.5 MB",
+      "format": "MP4"
+    },
+    {
+      "filename": "Atmospheric_Dissolve_Reel_24.mp4",
+      "workflow": "Pacing & Tempo Experiment / Match-Cut Transitions",
+      "concept": "Hypnotic match-cut montage utilizing gentle optical dissolves and atmospheric ambient textures.",
+      "video": "assets/vids_24.mp4",
+      "image": "assets/vids_24_poster.jpg",
+      "thumb": "assets/vids_24_thumb.jpg",
+      "dimensions": "1080 x 1920",
+      "size": "6.7 MB",
+      "format": "MP4"
+    },
+    {
+      "filename": "Dynamic_Punchy_Cutdown_05.mp4",
+      "workflow": "Short-Form Social Pacing / Snappy Sound Design",
+      "concept": "Punchy 16-second micro-cut engineered for maximum immediate hook and visual momentum.",
+      "video": "assets/vids_5.mp4",
+      "image": "assets/vids_5_poster.jpg",
+      "thumb": "assets/vids_5_thumb.jpg",
+      "dimensions": "1080 x 1920",
+      "size": "7.2 MB",
+      "format": "MP4"
+    },
+    {
+      "filename": "Men_Dont_Cry_Cinematic_Short.mp4",
+      "workflow": "Cinematic Narrative Drama / Intimate Soundscape",
+      "concept": "Evocative storytelling piece exploring emotional vulnerability through deliberate camera stillness.",
+      "video": "assets/vids_men_dont_cry.mp4",
+      "image": "assets/vids_men_dont_cry_poster.jpg",
+      "thumb": "assets/vids_men_dont_cry_thumb.jpg",
+      "dimensions": "1080 x 1920",
+      "size": "18.3 MB",
+      "format": "MP4"
+    },
+    {
+      "filename": "Naya_Urban_Energy_Reel.mp4",
+      "workflow": "Urban Streetwear Rhythm / 9:16 Vertical Storytelling",
+      "concept": "Energetic street-level movement featuring dynamic whip pans and stylized modern color contrast.",
+      "video": "assets/vids_naya.mp4",
+      "image": "assets/vids_naya_poster.jpg",
+      "thumb": "assets/vids_naya_thumb.jpg",
+      "dimensions": "1080 x 1920",
+      "size": "14.1 MB",
+      "format": "MP4"
+    },
+    {
+      "filename": "Smoking_Skin_Beauty_Editorial.mp4",
+      "workflow": "Beauty Retouching in Motion / Soft-Light Diffusion",
+      "concept": "Sensory skincare commercial reel highlighting natural skin textures, highlights, and tactile water droplets.",
+      "video": "assets/vids_smoking_skin.mp4",
+      "image": "assets/vids_smoking_skin_poster.jpg",
+      "thumb": "assets/vids_smoking_skin_thumb.jpg",
+      "dimensions": "1080 x 1920",
+      "size": "12.2 MB",
+      "format": "MP4"
+    },
+    {
+      "filename": "Views_Monthly_Cinematic_Recap.mp4",
+      "workflow": "Creative Director Monthly Reel / Kinetic Montage",
+      "concept": "Curated monthly visual compilation weaving across client projects, behind-the-scenes, and final renders.",
+      "video": "assets/vids_views_feb.mp4",
+      "image": "assets/vids_views_feb_poster.jpg",
+      "thumb": "assets/vids_views_feb_thumb.jpg",
+      "dimensions": "1080 x 1920",
+      "size": "23.4 MB",
+      "format": "MP4"
+    }
+  ],
+  "ad-campaigns": [
+    {
+      "filename": "Commercial_Ad_Sustainable_Future_01.jpg",
+      "workflow": "Commercial Advertising / Omni-Channel Campaign Art Direction",
+      "concept": "Beyond batteries - powering a sustainable future. High-impact commercial brand hero visual.",
+      "image": "assets/ads_first.jpg",
+      "thumb": "assets/ads_first_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "752 KB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Commercial_Billboard_Ad_01.jpg",
+      "workflow": "Omnichannel Billboard & Print Architecture",
+      "concept": "Unified brand visual identity crafted for large-format out-of-home advertising.",
+      "image": "assets/ads_1.jpg",
+      "thumb": "assets/ads_1_thumb.jpg",
+      "dimensions": "2880 x 2880",
+      "size": "943 KB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Transit_Billboard_Display_02.jpg",
+      "workflow": "High-Visibility Transit OOH / Bold Typography",
+      "concept": "Roadside commuter billboard designed for instant recognition and rapid brand recall.",
+      "image": "assets/ads_2_new.jpg",
+      "thumb": "assets/ads_2_new_thumb.jpg",
+      "dimensions": "2880 x 2880",
+      "size": "1.5 MB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Meta_Performance_Ad_Creative_03.jpg",
+      "workflow": "Paid Social Architecture / High-Conversion Visuals",
+      "concept": "Conversion-optimized paid social graphic testing structured contrast against platform feeds.",
+      "image": "assets/ads_3_meta.jpg",
+      "thumb": "assets/ads_3_meta_thumb.jpg",
+      "dimensions": "2880 x 2880",
+      "size": "919 KB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Magazine_Editorial_Ad_01.jpg",
+      "workflow": "Full-Page Magazine Print Architecture",
+      "concept": "Prestigious full-bleed print advertisement balancing elegant editorial composition with commercial messaging.",
+      "image": "assets/ads_ad1.jpg",
+      "thumb": "assets/ads_ad1_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "1.2 MB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Digital_Flagship_Hero_Ad_02.jpg",
+      "workflow": "Flagship Storefront Promotion / Bold Contrast",
+      "concept": "High-contrast retail launch campaign asset crafted for digital kiosks and in-store displays.",
+      "image": "assets/ads_ad2.jpg",
+      "thumb": "assets/ads_ad2_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "1.2 MB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Academic_Admissions_Campaign_BCOM.jpg",
+      "workflow": "Institutional Enrollment Marketing / Clear Messaging",
+      "concept": "Higher-education recruitment campaign poster designed for student aspirational engagement.",
+      "image": "assets/ads_bcom2.jpg",
+      "thumb": "assets/ads_bcom2_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "1.3 MB",
+      "format": "JPG"
+    },
+    {
+      "filename": "PUC_Science_Excellence_Campaign.jpg",
+      "workflow": "Academic Visual Direction / Credibility Layout",
+      "concept": "Rigorous academic excellence promotional graphic featuring bold achievements and structured hierarchy.",
+      "image": "assets/ads_puc_science.jpg",
+      "thumb": "assets/ads_puc_science_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "1.0 MB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Retail_Key_Visual_Statics_01.jpg",
+      "workflow": "Retail Marketing Suite / Vibrant Key Visuals",
+      "concept": "Vibrant retail store opening announcement with high-energy typography and promotional callout.",
+      "image": "assets/ads_statics_01.jpg",
+      "thumb": "assets/ads_statics_01_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "1.5 MB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Retail_Key_Visual_Statics_02.jpg",
+      "workflow": "Multi-Variant Campaign Adaptation",
+      "concept": "Complementary colorway variant for omnichannel consistency across digital and print collateral.",
+      "image": "assets/ads_statics_02.jpg",
+      "thumb": "assets/ads_statics_02_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "1.4 MB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Promotional_Offer_Statics_03.jpg",
+      "workflow": "Conversion-Focused Layout / Value Proposition",
+      "concept": "Direct commercial appeal emphasizing product accessibility and limited-time brand opportunities.",
+      "image": "assets/ads_statics_03.jpg",
+      "thumb": "assets/ads_statics_03_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "1.1 MB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Creative_Refresh_Statics_07.jpg",
+      "workflow": "Mid-Campaign Creative Refresh / High Impact",
+      "concept": "Iterative visual test introducing punchy focal contrast to combat audience ad fatigue.",
+      "image": "assets/ads_statics_07.jpg",
+      "thumb": "assets/ads_statics_07_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "920 KB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Brand_Awareness_Statics_08.jpg",
+      "workflow": "Brand Positioning / Bold Monochromatic Punch",
+      "concept": "High-contrast branding asset reinforcing brand recall and clean modern graphic posture.",
+      "image": "assets/ads_statics_08.jpg",
+      "thumb": "assets/ads_statics_08_thumb.jpg",
+      "dimensions": "2880 x 3600",
+      "size": "1.2 MB",
+      "format": "JPG"
+    },
+    {
+      "filename": "VVD_Gold_Commercial_Campaign.jpg",
+      "workflow": "Heritage Product Advertising / Luxury Warmth",
+      "concept": "Golden ambient heritage brand advertisement emphasizing purity, natural ingredients, and timeless tradition.",
+      "image": "assets/ads_vvd.jpg",
+      "thumb": "assets/ads_vvd_thumb.jpg",
+      "dimensions": "2880 x 2160",
+      "size": "759 KB",
+      "format": "JPG"
+    },
+    {
+      "filename": "Comp1_Commercial_Video_Ad.mp4",
+      "workflow": "Motion Advertising / Short-Form Video Campaign",
+      "concept": "Dynamic multi-scene video commercial cut to tempo for high-conversion social feeds.",
+      "video": "assets/ads_comp1.mp4",
+      "image": "assets/ads_comp1_poster.jpg",
+      "thumb": "assets/ads_comp1_thumb.jpg",
+      "dimensions": "1080 x 1920",
+      "size": "2.1 MB",
+      "format": "MP4"
+    }
+  ]
+};
+
+      // Backwards-compatibility alias
+      CATEGORY_ITEMS['social-media'] = CATEGORY_ITEMS['static-creatives'];
+
+      const CATEGORY_NAMES = {
+        'static-creatives': 'Static Creatives',
+        'social-media': 'Static Creatives',
+        'motion-graphics': 'Motion Graphics',
+        'reels-video': 'Reels & Video',
+        'ad-campaigns': 'Ad Campaigns',
+        '3d-works': '3D Works'
+      };
+
+      const CAT_INDEX_MAP = {
+        'static-creatives': 0,
+        'social-media': 0,
+        'motion-graphics': 1,
+        'reels-video': 2,
+        'ad-campaigns': 3,
+        '3d-works': 4
+      };
+
+      // ========================================================================
+      // 2. State & DOM References
+      // ========================================================================
+      const params = new URLSearchParams(window.location.search);
+      let currentCategory = params.get('type') || safeSessionGet('outputs_active_category') || 'static-creatives';
+      if (currentCategory === 'social-media') {
+        currentCategory = 'static-creatives';
+      }
+      if (!CATEGORY_ITEMS[currentCategory]) {
+        currentCategory = 'static-creatives';
+      }
+
+      let items = CATEGORY_ITEMS[currentCategory];
+      let currentIndex = 0;
+      let currentRotation = 0;
+      let currentZoom = 74;
+      let isFilmstripVisible = true;
+      let isInfoOpen = false;
+
+      // Prime session state for clean navigation back to The Outputs archive
+      safeSessionSet('outputs_restore_active', 'true');
+      safeSessionSet('outputs_active_category', currentCategory);
+      if (CAT_INDEX_MAP[currentCategory] !== undefined) {
+        safeSessionSet('outputs_active_index', CAT_INDEX_MAP[currentCategory].toString());
+      }
+
+      // DOM Elements
+      const windowTitle = document.getElementById('photos-window-title');
+      const filenameTitle = document.getElementById('photos-filename-title');
+      const mainImage = document.getElementById('photos-main-image');
+      const mainVideo = document.getElementById('photos-main-video');
+      const filmstripWrapper = document.getElementById('photos-filmstrip-wrapper');
+
+      const formatBadge = document.getElementById('bottom-format-badge');
+      const dimensionsVal = document.getElementById('bottom-dimensions-val');
+      const filesizeVal = document.getElementById('bottom-filesize-val');
+
+      const prevBtn = document.getElementById('photos-nav-prev-btn');
+      const nextBtn = document.getElementById('photos-nav-next-btn');
+
+      const zoomGroup = document.querySelector('.photos-zoom-group');
+      const zoomSlider = document.getElementById('zoom-range-slider');
+      const zoomText = document.getElementById('zoom-percentage-text');
+      const zoomInBtn = document.getElementById('zoom-in-btn');
+      const zoomOutBtn = document.getElementById('zoom-out-btn');
+      const zoomValueBtn = document.getElementById('zoom-value-btn');
+
+      const rotateBtn = document.getElementById('tool-rotate-btn');
+      const fullscreenBtn = document.getElementById('fullscreen-btn');
+      const toggleFilmstripBtn = document.getElementById('toggle-filmstrip-btn');
+
+      const infoBtn = document.getElementById('bottom-info-btn');
+      const infoFlyout = document.getElementById('photos-info-flyout');
+      const infoCloseBtn = document.getElementById('photos-info-close-btn');
+
+      // Info Fields
+      const infoFileName = document.getElementById('info-file-name');
+      const infoCategoryName = document.getElementById('info-category-name');
+      const infoDimensions = document.getElementById('info-dimensions');
+      const infoFilesize = document.getElementById('info-filesize');
+      const infoFormat = document.getElementById('info-format');
+      const infoWorkflow = document.getElementById('info-workflow');
+      const infoConcept = document.getElementById('info-concept');
+
+      // Caption Controls
+      const closeBtn = document.getElementById('caption-close-btn');
+      const minimizeBtn = document.getElementById('caption-minimize-btn');
+      const maximizeBtn = document.getElementById('caption-maximize-btn');
+
+      // Open with Dropdown
+      const openWithBtn = document.getElementById('open-with-btn');
+      const openWithMenu = document.getElementById('open-with-menu');
+
+      const canvasStage = document.getElementById('photos-canvas-stage');
+      const mediaContainer = document.getElementById('photos-media-container');
+
+      // Video Controls DOM Elements
+      const videoControls = document.getElementById('photos-video-controls');
+      const vctrlPlayBtn = document.getElementById('vctrl-play-btn');
+      const vctrlPlayIcon = document.getElementById('vctrl-play-icon');
+      const vctrlPauseIcon = document.getElementById('vctrl-pause-icon');
+      const vctrlTimeText = document.getElementById('vctrl-time-text');
+      const vctrlTimelineWrap = document.getElementById('vctrl-timeline-wrap');
+      const vctrlTimelineTrack = document.getElementById('vctrl-timeline-track');
+      const vctrlTimelineBuffered = document.getElementById('vctrl-timeline-buffered');
+      const vctrlTimelineProgress = document.getElementById('vctrl-timeline-progress');
+      const vctrlTimelineThumb = document.getElementById('vctrl-timeline-thumb');
+      const vctrlMuteBtn = document.getElementById('vctrl-mute-btn');
+      const vctrlVolHighIcon = document.getElementById('vctrl-vol-high-icon');
+      const vctrlVolMutedIcon = document.getElementById('vctrl-vol-muted-icon');
+      const vctrlVolumeSlider = document.getElementById('vctrl-volume-slider');
+
+      let videoControlsHideTimer = null;
+      let isHoveringControls = false;
+      let isScrubbingTimeline = false;
+      let lastNonZeroVolume = 1.0;
+
+      function formatTime(sec) {
+        if (isNaN(sec) || !isFinite(sec)) return '0:00';
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+      }
+
+      function updateTimeDisplay() {
+        if (!vctrlTimeText || !mainVideo) return;
+        const cur = formatTime(mainVideo.currentTime || 0);
+        const dur = formatTime(mainVideo.duration || 0);
+        vctrlTimeText.textContent = `${cur} / ${dur}`;
+      }
+
+      function updatePlayState(isPlaying) {
+        if (vctrlPlayIcon && vctrlPauseIcon) {
+          vctrlPlayIcon.style.display = isPlaying ? 'none' : 'block';
+          vctrlPauseIcon.style.display = isPlaying ? 'block' : 'none';
+        }
+      }
+
+      function toggleVideoPlay() {
+        if (!mainVideo) return;
+        if (mainVideo.paused) {
+          mainVideo.play().catch(function() {});
+        } else {
+          mainVideo.pause();
+        }
+      }
+
+      function showVideoControls() {
+        const item = items[currentIndex];
+        if (!item || !item.video) return;
+        if (!videoControls) return;
+
+        videoControls.classList.add('is-visible');
+        clearTimeout(videoControlsHideTimer);
+
+        if (mainVideo && !mainVideo.paused && !isScrubbingTimeline && !isHoveringControls) {
+          videoControlsHideTimer = setTimeout(() => {
+            if (mainVideo && !mainVideo.paused && !isScrubbingTimeline && !isHoveringControls) {
+              videoControls.classList.remove('is-visible');
+            }
+          }, 2400);
+        }
+      }
+
+      function updateVolume(val) {
+        if (!mainVideo) return;
+        const clamped = Math.max(0, Math.min(1, val));
+        mainVideo.volume = clamped;
+        mainVideo.muted = (clamped === 0);
+        if (vctrlVolumeSlider) vctrlVolumeSlider.value = clamped;
+
+        if (clamped === 0 || mainVideo.muted) {
+          if (vctrlVolHighIcon) vctrlVolHighIcon.style.display = 'none';
+          if (vctrlVolMutedIcon) vctrlVolMutedIcon.style.display = 'block';
+        } else {
+          if (vctrlVolHighIcon) vctrlVolHighIcon.style.display = 'block';
+          if (vctrlVolMutedIcon) vctrlVolMutedIcon.style.display = 'none';
+        }
+      }
+
+      function toggleMute() {
+        if (!mainVideo) return;
+        if (mainVideo.muted || mainVideo.volume === 0) {
+          mainVideo.muted = false;
+          updateVolume(lastNonZeroVolume || 1);
+        } else {
+          lastNonZeroVolume = mainVideo.volume || 1;
+          mainVideo.muted = true;
+          updateVolume(0);
+        }
+      }
+
+      // Timeline Seeking Engine
+      function seekFromEvent(e) {
+        if (!mainVideo || !mainVideo.duration || !vctrlTimelineTrack) return;
+        const rect = vctrlTimelineTrack.getBoundingClientRect();
+        const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+        const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+        mainVideo.currentTime = ratio * mainVideo.duration;
+        const pct = (ratio * 100).toFixed(1) + '%';
+        if (vctrlTimelineProgress) vctrlTimelineProgress.style.width = pct;
+        if (vctrlTimelineThumb) vctrlTimelineThumb.style.left = pct;
+        if (vctrlTimelineWrap) vctrlTimelineWrap.setAttribute('aria-valuenow', Math.round(ratio * 100));
+        updateTimeDisplay();
+      }
+
+      if (vctrlTimelineWrap) {
+        vctrlTimelineWrap.addEventListener('pointerdown', (e) => {
+          isScrubbingTimeline = true;
+          vctrlTimelineWrap.classList.add('is-scrubbing');
+          showVideoControls();
+          seekFromEvent(e);
+          try { vctrlTimelineWrap.setPointerCapture(e.pointerId); } catch(err) {}
+        });
+
+        vctrlTimelineWrap.addEventListener('pointermove', (e) => {
+          if (!isScrubbingTimeline) return;
+          seekFromEvent(e);
+        });
+
+        const endScrubbing = (e) => {
+          if (!isScrubbingTimeline) return;
+          isScrubbingTimeline = false;
+          vctrlTimelineWrap.classList.remove('is-scrubbing');
+          showVideoControls();
+          if (e && e.pointerId) {
+            try { vctrlTimelineWrap.releasePointerCapture(e.pointerId); } catch(err) {}
+          }
+        };
+
+        vctrlTimelineWrap.addEventListener('pointerup', endScrubbing);
+        vctrlTimelineWrap.addEventListener('pointercancel', endScrubbing);
+      }
+
+      if (vctrlPlayBtn) {
+        vctrlPlayBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleVideoPlay();
+        });
+      }
+
+      if (vctrlMuteBtn) {
+        vctrlMuteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleMute();
+        });
+      }
+
+      if (vctrlVolumeSlider) {
+        vctrlVolumeSlider.addEventListener('input', (e) => {
+          const val = parseFloat(e.target.value);
+          if (val > 0) lastNonZeroVolume = val;
+          updateVolume(val);
+        });
+      }
+
+      if (mainVideo) {
+        mainVideo.addEventListener('play', () => {
+          updatePlayState(true);
+          showVideoControls();
+        });
+
+        mainVideo.addEventListener('pause', () => {
+          updatePlayState(false);
+          showVideoControls();
+        });
+
+        mainVideo.addEventListener('timeupdate', () => {
+          if (!mainVideo.duration || isScrubbingTimeline) return;
+          const ratio = mainVideo.currentTime / mainVideo.duration;
+          const pct = (ratio * 100).toFixed(1) + '%';
+          if (vctrlTimelineProgress) vctrlTimelineProgress.style.width = pct;
+          if (vctrlTimelineThumb) vctrlTimelineThumb.style.left = pct;
+          if (vctrlTimelineWrap) vctrlTimelineWrap.setAttribute('aria-valuenow', Math.round(ratio * 100));
+          updateTimeDisplay();
+        });
+
+        mainVideo.addEventListener('progress', () => {
+          if (!mainVideo.duration || !mainVideo.buffered.length) return;
+          try {
+            const end = mainVideo.buffered.end(mainVideo.buffered.length - 1);
+            const ratio = Math.max(0, Math.min(1, end / mainVideo.duration));
+            if (vctrlTimelineBuffered) vctrlTimelineBuffered.style.width = (ratio * 100).toFixed(1) + '%';
+          } catch(err) {}
+        });
+
+        mainVideo.addEventListener('loadedmetadata', () => {
+          updateTimeDisplay();
+          const item = items[currentIndex];
+          if (item && item.video) {
+            if (dimensionsVal && mainVideo.videoWidth && mainVideo.videoHeight) {
+              dimensionsVal.textContent = `${mainVideo.videoWidth} x ${mainVideo.videoHeight}`;
+            }
+          }
+        });
+
+        // Single click toggles play/pause; double click toggles fullscreen
+        let clickTimer = null;
+        mainVideo.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (clickTimer) {
+            clearTimeout(clickTimer);
+            clickTimer = null;
+            toggleFullScreen();
+          } else {
+            clickTimer = setTimeout(() => {
+              clickTimer = null;
+              toggleVideoPlay();
+            }, 250);
+          }
+        });
+      }
+
+      if (videoControls) {
+        videoControls.addEventListener('pointerenter', () => {
+          isHoveringControls = true;
+          clearTimeout(videoControlsHideTimer);
+          videoControls.classList.add('is-visible');
+        });
+
+        videoControls.addEventListener('pointerleave', () => {
+          isHoveringControls = false;
+          showVideoControls();
+        });
+      }
+
+      // Hover anywhere over canvas stage or media container reveals controls immediately
+      if (canvasStage) {
+        canvasStage.addEventListener('pointermove', () => {
+          showVideoControls();
+        });
+      }
+
+      if (mediaContainer) {
+        mediaContainer.addEventListener('pointermove', () => {
+          showVideoControls();
+        });
+      }
+
+      function getActiveMedia() {
+        const item = items[currentIndex];
+        return (item && item.video) ? mainVideo : mainImage;
+      }
+
+      // ========================================================================
+      // 3. Render & State Synchronization
+      // ========================================================================
+      function renderActiveItem(animate = true) {
+        const item = items[currentIndex];
+        if (!item) return;
+
+        // Reset pan & rotation on navigation
+        panX = 0;
+        panY = 0;
+        currentRotation = 0;
+        currentZoom = 74;
+        document.documentElement.classList.remove('is-zoomed-pan', 'is-panning', 'cursor-grab-active');
+
+        // Window Title & Filename at top center
+        if (windowTitle) windowTitle.textContent = `${item.filename} — Photos`;
+        if (filenameTitle) filenameTitle.textContent = item.filename;
+
+        const isVideo = !!item.video;
+        const activeEl = isVideo ? mainVideo : mainImage;
+        const inactiveEl = isVideo ? mainImage : mainVideo;
+
+        if (inactiveEl) {
+          if (inactiveEl.tagName === 'VIDEO') {
+            try { inactiveEl.pause(); } catch (e) {}
+          }
+          inactiveEl.style.display = 'none';
+        }
+
+        // Enable or disable zoom controls based on media type (Images: enabled; Videos: disabled)
+        if (isVideo) {
+          if (zoomGroup) zoomGroup.classList.add('is-disabled');
+          if (zoomSlider) {
+            zoomSlider.disabled = true;
+            zoomSlider.value = 100;
+          }
+          if (zoomInBtn) zoomInBtn.disabled = true;
+          if (zoomOutBtn) zoomOutBtn.disabled = true;
+          if (zoomValueBtn) zoomValueBtn.disabled = true;
+          if (rotateBtn) {
+            rotateBtn.disabled = true;
+            rotateBtn.style.opacity = '0.35';
+            rotateBtn.style.pointerEvents = 'none';
+          }
+          if (zoomText) zoomText.textContent = 'Fit';
+        } else {
+          if (zoomGroup) zoomGroup.classList.remove('is-disabled');
+          if (zoomSlider) {
+            zoomSlider.disabled = false;
+            zoomSlider.value = currentZoom;
+          }
+          if (zoomInBtn) zoomInBtn.disabled = false;
+          if (zoomOutBtn) zoomOutBtn.disabled = false;
+          if (zoomValueBtn) zoomValueBtn.disabled = false;
+          if (rotateBtn) {
+            rotateBtn.disabled = false;
+            rotateBtn.style.opacity = '';
+            rotateBtn.style.pointerEvents = '';
+          }
+          if (zoomText) zoomText.textContent = `${currentZoom}%`;
+        }
+
+        if (activeEl) {
+          activeEl.style.display = 'block';
+          if (animate) {
+            activeEl.style.opacity = '0.4';
+            updateMediaTransform(false, true);
+          }
+
+          if (isVideo) {
+            mainVideo.style.transform = 'none';
+            if (mainVideo.src.indexOf(item.video) === -1) {
+              mainVideo.src = item.video;
+              mainVideo.load();
+            }
+            mainVideo.play().catch(function() {});
+            if (videoControls) {
+              videoControls.style.display = 'flex';
+              showVideoControls();
+            }
+          } else {
+            if (videoControls) {
+              videoControls.style.display = 'none';
+              videoControls.classList.remove('is-visible');
+            }
+            mainImage.src = item.image;
+            mainImage.alt = item.concept || item.filename;
+          }
+
+          setTimeout(() => {
+            activeEl.style.opacity = '1';
+            updateMediaTransform(true);
+          }, 50);
+        }
+
+        // Bottom Info Bar
+        if (formatBadge) formatBadge.textContent = item.format;
+        if (dimensionsVal) dimensionsVal.textContent = item.dimensions;
+        if (filesizeVal) filesizeVal.textContent = item.size;
+
+        // Info Panel Fields
+        if (infoFileName) infoFileName.textContent = item.filename;
+        if (infoCategoryName) infoCategoryName.textContent = `The Outputs // ${CATEGORY_NAMES[currentCategory] || 'Creative Archive'}`;
+        if (infoDimensions) infoDimensions.textContent = `${item.dimensions} px`;
+        if (infoFilesize) infoFilesize.textContent = item.size;
+        if (infoFormat) infoFormat.textContent = `${item.format} / 24-bit sRGB Color`;
+        if (infoWorkflow) infoWorkflow.textContent = item.workflow || 'Digital Production Suite';
+        if (infoConcept) infoConcept.textContent = item.concept || 'Selected creative output.';
+
+        // Highlight Filmstrip Thumbnail
+        if (filmstripWrapper) {
+          const thumbCards = filmstripWrapper.querySelectorAll('.photos-thumbnail-card');
+          thumbCards.forEach((card, idx) => {
+            const isActive = idx === currentIndex;
+            card.classList.toggle('is-active', isActive);
+            card.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            if (isActive) {
+              const targetLeft = card.offsetLeft - (filmstripWrapper.clientWidth / 2) + (card.clientWidth / 2);
+              filmstripWrapper.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
+            }
+          });
+        }
+      }
+
+      function buildFilmstrip() {
+        if (!filmstripWrapper) return;
+        filmstripWrapper.innerHTML = '';
+        items.forEach((item, idx) => {
+          const card = document.createElement('div');
+          card.className = `photos-thumbnail-card ${idx === currentIndex ? 'is-active' : ''}`;
+          card.setAttribute('role', 'tab');
+          card.setAttribute('aria-label', `Thumbnail ${idx + 1}: ${item.filename}`);
+          card.setAttribute('data-index', idx);
+
+          const img = document.createElement('img');
+          img.className = 'photos-thumbnail-img';
+          img.src = item.thumb || item.image || item.poster;
+          img.alt = item.filename;
+          img.loading = 'eager';
+
+          card.appendChild(img);
+          card.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentIndex !== idx) {
+              currentIndex = idx;
+              renderActiveItem();
+            }
+          });
+
+          filmstripWrapper.appendChild(card);
+        });
+      }
+
+      // Re-evaluate pan state once image naturally completes decoding & normalize rotation seamlessly
+      if (mainImage) {
+        mainImage.addEventListener('load', () => {
+          updatePanState();
+          updateMediaTransform(true);
+        });
+
+        mainImage.addEventListener('transitionend', (e) => {
+          if (e.propertyName === 'transform' && currentRotation >= 360) {
+            currentRotation = currentRotation % 360;
+            updateMediaTransform(false);
+          }
+        });
+      }
+
+      // ========================================================================
+      // 4. Navigation Engine (Prev, Next, Keybindings)
+      // ========================================================================
+      function goToPrev(e) {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        currentIndex = (currentIndex - 1 + items.length) % items.length;
+        renderActiveItem();
+      }
+
+      function goToNext(e) {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        currentIndex = (currentIndex + 1) % items.length;
+        renderActiveItem();
+      }
+
+      if (prevBtn) prevBtn.addEventListener('click', goToPrev);
+      if (nextBtn) nextBtn.addEventListener('click', goToNext);
+
+      // Keyboard arrow navigation & media shortcuts
+      window.addEventListener('keydown', (e) => {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+        if (e.key === 'ArrowLeft') {
+          goToPrev();
+        } else if (e.key === 'ArrowRight') {
+          goToNext();
+        } else if (e.key === 'Escape') {
+          const appWindow = document.getElementById('photos-app-window');
+          if (isInfoOpen) {
+            toggleInfoPanel(false);
+          } else if (isFullScreenActive() || (appWindow && appWindow.classList.contains('is-fullscreen'))) {
+            toggleFullScreen();
+          } else {
+            navigateBackToOutputs();
+          }
+        } else if (e.code === 'Space' || e.key === ' ') {
+          const item = items[currentIndex];
+          if (item && item.video) {
+            e.preventDefault();
+            toggleVideoPlay();
+          }
+        } else if (e.key === 'f' || e.key === 'F') {
+          e.preventDefault();
+          toggleFullScreen();
+        } else if (e.key === 'm' || e.key === 'M') {
+          const item = items[currentIndex];
+          if (item && item.video) {
+            e.preventDefault();
+            toggleMute();
+          }
+        }
+      });
+
+      // ========================================================================
+      // 5. Interactive Zoom, Pan & Drag Navigation Engine (Active on Images, Disabled on Videos)
+      // ========================================================================
+      let panX = 0;
+      let panY = 0;
+      let isPanning = false;
+      let startMouseX = 0;
+      let startMouseY = 0;
+      let startPanX = 0;
+      let startPanY = 0;
+
+      function updateMediaTransform(smooth = false, duringFade = false) {
+        const item = items[currentIndex];
+        if (item && item.video) {
+          if (mainVideo) {
+            mainVideo.style.transform = 'none';
+            mainVideo.style.transition = 'none';
+          }
+          return;
+        }
+        if (!mainImage) return;
+        mainImage.style.transition = smooth ? 'transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease' : 'none';
+        const scaleVal = duringFade ? ((currentZoom / 100) * 0.98) : (currentZoom / 100);
+        mainImage.style.transform = `translate3d(${panX.toFixed(1)}px, ${panY.toFixed(1)}px, 0) scale(${scaleVal}) rotate(${currentRotation}deg)`;
+      }
+
+      function getImageMetrics() {
+        const target = getActiveMedia();
+        if (!target || !mediaContainer) {
+          return { canPan: false, isOverflowX: false, isOverflowY: false, maxX: 0, maxY: 0 };
+        }
+
+        const containerRect = mediaContainer.getBoundingClientRect();
+        const viewportW = containerRect.width || window.innerWidth;
+        const viewportH = containerRect.height || (window.innerHeight - 100);
+
+        let baseW = target.offsetWidth || 0;
+        let baseH = target.offsetHeight || 0;
+
+        if (!baseW || !baseH) {
+          const natW = target.naturalWidth || target.videoWidth || 1920;
+          const natH = target.naturalHeight || target.videoHeight || 1080;
+          const ratio = Math.min((viewportW * 0.9) / natW, (viewportH - 60) / natH);
+          baseW = natW * ratio;
+          baseH = natH * ratio;
+        }
+
+        const normRotation = ((currentRotation % 360) + 360) % 360;
+        const isRotated90 = (normRotation === 90 || normRotation === 270);
+        const effBaseW = isRotated90 ? baseH : baseW;
+        const effBaseH = isRotated90 ? baseW : baseH;
+
+        const scale = currentZoom / 100;
+        const visualW = effBaseW * scale;
+        const visualH = effBaseH * scale;
+
+        const overflowX = visualW - viewportW;
+        const overflowY = visualH - viewportH;
+
+        const isOverflowX = overflowX > 12;
+        const isOverflowY = overflowY > 12;
+        const canPan = isOverflowX || isOverflowY;
+
+        const maxX = isOverflowX ? Math.round(overflowX / 2) : 0;
+        const maxY = isOverflowY ? Math.round(overflowY / 2) : 0;
+
+        return {
+          canPan,
+          isOverflowX,
+          isOverflowY,
+          maxX,
+          maxY,
+          visualW,
+          visualH,
+          viewportW,
+          viewportH
+        };
+      }
+
+      function updatePanState() {
+        const item = items[currentIndex];
+        if (item && item.video) {
+          panX = 0;
+          panY = 0;
+          document.documentElement.classList.remove('is-zoomed-pan', 'is-panning', 'cursor-grab-active');
+          return;
+        }
+        const metrics = getImageMetrics();
+        if (!metrics.canPan) {
+          panX = 0;
+          panY = 0;
+          document.documentElement.classList.remove('is-zoomed-pan', 'is-panning', 'cursor-grab-active');
+        } else {
+          document.documentElement.classList.add('is-zoomed-pan');
+          panX = metrics.isOverflowX ? Math.max(-metrics.maxX, Math.min(metrics.maxX, panX)) : 0;
+          panY = metrics.isOverflowY ? Math.max(-metrics.maxY, Math.min(metrics.maxY, panY)) : 0;
+        }
+      }
+
+      function applyZoom(val, smooth = true) {
+        const item = items[currentIndex];
+        if (item && item.video) return; // Zoom is disabled for videos
+        currentZoom = Math.max(30, Math.min(250, val));
+        if (zoomSlider) zoomSlider.value = currentZoom;
+        if (zoomText) zoomText.textContent = `${currentZoom}%`;
+
+        updatePanState();
+        updateMediaTransform(smooth);
+      }
+
+      if (zoomSlider) {
+        zoomSlider.addEventListener('input', (e) => {
+          applyZoom(parseInt(e.target.value, 10), false);
+        });
+      }
+
+      if (zoomInBtn) {
+        zoomInBtn.addEventListener('click', () => {
+          applyZoom(currentZoom + 15, true);
+        });
+      }
+
+      if (zoomOutBtn) {
+        zoomOutBtn.addEventListener('click', () => {
+          applyZoom(currentZoom - 15, true);
+        });
+      }
+
+      if (zoomValueBtn) {
+        zoomValueBtn.addEventListener('click', () => {
+          if (currentZoom === 74) {
+            applyZoom(100, true);
+          } else {
+            applyZoom(74, true);
+          }
+        });
+      }
+
+      // Rotate Button: 90-degree clockwise step (images only; rotates forward consistently)
+      if (rotateBtn) {
+        rotateBtn.addEventListener('click', () => {
+          const item = items[currentIndex];
+          if (item && item.video) return;
+          currentRotation += 90;
+          updatePanState();
+          updateMediaTransform(true);
+        });
+      }
+
+      // Toggle Filmstrip Dock
+      if (toggleFilmstripBtn && filmstripWrapper) {
+        toggleFilmstripBtn.addEventListener('click', () => {
+          isFilmstripVisible = !isFilmstripVisible;
+          filmstripWrapper.style.opacity = isFilmstripVisible ? '1' : '0';
+          filmstripWrapper.style.pointerEvents = isFilmstripVisible ? 'auto' : 'none';
+          filmstripWrapper.style.transform = isFilmstripVisible ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(20px)';
+        });
+      }
+
+      // Pan Drag Handling on Canvas Stage
+      if (canvasStage && mediaContainer) {
+        function syncHoverCursor() {
+          if (isPanning) return;
+          const item = items[currentIndex];
+          if (item && item.video) {
+            document.documentElement.classList.remove('cursor-grab-active');
+            return;
+          }
+          const metrics = getImageMetrics();
+          if (metrics.canPan) {
+            document.documentElement.classList.add('cursor-grab-active');
+          } else {
+            document.documentElement.classList.remove('cursor-grab-active');
+          }
+        }
+
+        mediaContainer.addEventListener('pointerenter', syncHoverCursor);
+        mediaContainer.addEventListener('pointermove', syncHoverCursor);
+        mediaContainer.addEventListener('pointerleave', () => {
+          if (!isPanning) {
+            document.documentElement.classList.remove('cursor-grab-active');
+          }
+        });
+
+        canvasStage.addEventListener('pointerdown', (e) => {
+          if (e.button !== 0 && e.pointerType === 'mouse') return;
+          if (e.target.closest('button, a, input, .photos-edge-nav-zone, .photos-filmstrip-wrapper, .photos-info-flyout, .photos-titlebar, .photos-bottombar')) {
+            return;
+          }
+
+          const item = items[currentIndex];
+          if (item && item.video) return; // No pan dragging for videos
+
+          const metrics = getImageMetrics();
+          if (!metrics.canPan) {
+            return;
+          }
+
+          isPanning = true;
+          startMouseX = e.clientX;
+          startMouseY = e.clientY;
+          startPanX = panX;
+          startPanY = panY;
+
+          document.documentElement.classList.add('is-panning');
+          updateMediaTransform(false);
+
+          try {
+            canvasStage.setPointerCapture(e.pointerId);
+          } catch (err) {}
+          e.preventDefault();
+        });
+
+        canvasStage.addEventListener('pointermove', (e) => {
+          if (!isPanning) return;
+          const dx = e.clientX - startMouseX;
+          const dy = e.clientY - startMouseY;
+
+          const metrics = getImageMetrics();
+          panX = metrics.isOverflowX ? Math.max(-metrics.maxX, Math.min(metrics.maxX, startPanX + dx)) : 0;
+          panY = metrics.isOverflowY ? Math.max(-metrics.maxY, Math.min(metrics.maxY, startPanY + dy)) : 0;
+
+          updateMediaTransform(false);
+        });
+
+        const stopPan = (e) => {
+          if (!isPanning) return;
+          isPanning = false;
+          document.documentElement.classList.remove('is-panning');
+          updateMediaTransform(true);
+          if (e && e.pointerId) {
+            try {
+              canvasStage.releasePointerCapture(e.pointerId);
+            } catch (err) {}
+          }
+        };
+
+        canvasStage.addEventListener('pointerup', stopPan);
+        canvasStage.addEventListener('pointercancel', stopPan);
+
+        // Smooth Desktop Wheel Zooming (images only)
+        canvasStage.addEventListener('wheel', (e) => {
+          if (e.target.closest('.photos-filmstrip-wrapper, .photos-info-flyout')) return;
+          const item = items[currentIndex];
+          if (item && item.video) return; // Zoom is disabled for videos
+          e.preventDefault();
+          const step = e.deltaY < 0 ? 15 : -15;
+          applyZoom(currentZoom + step, true);
+        }, { passive: false });
+
+        window.addEventListener('resize', () => {
+          updatePanState();
+          updateMediaTransform(false);
+        });
+      }
+
+      // ========================================================================
+      // 5b. Unified Fullscreen & Maximize Engine (Top & Bottom Synchronized)
+      // ========================================================================
+      function isFullScreenActive() {
+        return !!(
+          document.fullscreenElement ||
+          document.webkitFullscreenElement ||
+          document.mozFullScreenElement ||
+          document.msFullscreenElement
+        );
+      }
+
+      function updateFullscreenUI(isFs) {
+        const appWindow = document.getElementById('photos-app-window');
+        if (appWindow) {
+          appWindow.classList.toggle('is-fullscreen', isFs);
+        }
+        document.documentElement.classList.toggle('is-fullscreen', isFs);
+
+        if (maximizeBtn) {
+          if (isFs) {
+            maximizeBtn.innerHTML = `
+              <svg viewBox="0 0 10 10" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.1" style="pointer-events: none; display: block; margin: auto;">
+                <path d="M2.5 2.5V0.5h7v7H7.5" />
+                <rect x="0.5" y="2.5" width="7" height="7" rx="0.5" />
+              </svg>
+            `;
+            maximizeBtn.setAttribute('aria-label', 'Restore Down');
+            maximizeBtn.setAttribute('title', 'Restore Down');
+          } else {
+            maximizeBtn.innerHTML = `
+              <svg viewBox="0 0 10 10" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.1" style="pointer-events: none; display: block; margin: auto;">
+                <rect x="0.5" y="0.5" width="9" height="9" rx="0.5" />
+              </svg>
+            `;
+            maximizeBtn.setAttribute('aria-label', 'Maximize');
+            maximizeBtn.setAttribute('title', 'Maximize');
+          }
+        }
+
+        if (fullscreenBtn) {
+          if (isFs) {
+            fullscreenBtn.innerHTML = `
+              <svg class="photos-tool-icon" viewBox="0 0 16 16" style="pointer-events: none;">
+                <path d="M6 2.5v3.5H2.5M10 2.5v3.5h3.5M13.5 10H10v3.5M2.5 10H6v3.5"/>
+              </svg>
+            `;
+            fullscreenBtn.setAttribute('aria-label', 'Exit full screen');
+            fullscreenBtn.setAttribute('title', 'Exit full screen');
+          } else {
+            fullscreenBtn.innerHTML = `
+              <svg class="photos-tool-icon" viewBox="0 0 16 16" style="pointer-events: none;">
+                <path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/>
+              </svg>
+            `;
+            fullscreenBtn.setAttribute('aria-label', 'Full screen');
+            fullscreenBtn.setAttribute('title', 'Full screen');
+          }
+        }
+
+        const item = items[currentIndex];
+        if (item && item.video) {
+          showVideoControls();
+        }
+      }
+
+      function toggleFullScreen(e) {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+
+        const appWindow = document.getElementById('photos-app-window');
+        const currentlyFs = isFullScreenActive() || (appWindow && appWindow.classList.contains('is-fullscreen'));
+        if (!currentlyFs) {
+          const docEl = document.documentElement;
+          const reqMethod = docEl.requestFullscreen ||
+                            docEl.webkitRequestFullscreen ||
+                            docEl.mozRequestFullScreen ||
+                            docEl.msRequestFullscreen;
+          if (reqMethod) {
+            try {
+              const p = reqMethod.call(docEl);
+              if (p && typeof p.then === 'function') {
+                p.then(() => updateFullscreenUI(true)).catch(() => updateFullscreenUI(true));
+              } else {
+                updateFullscreenUI(true);
+              }
+            } catch (err) {
+              updateFullscreenUI(true);
+            }
+          } else {
+            updateFullscreenUI(true);
+          }
+        } else {
+          const exitMethod = document.exitFullscreen ||
+                             document.webkitExitFullscreen ||
+                             document.mozCancelFullScreen ||
+                             document.msExitFullscreen;
+          if (exitMethod && isFullScreenActive()) {
+            try {
+              const p = exitMethod.call(document);
+              if (p && typeof p.then === 'function') {
+                p.then(() => updateFullscreenUI(false)).catch(() => updateFullscreenUI(false));
+              } else {
+                updateFullscreenUI(false);
+              }
+            } catch (err) {
+              updateFullscreenUI(false);
+            }
+          } else {
+            updateFullscreenUI(false);
+          }
+        }
+      }
+
+      const fsEvents = ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'];
+      fsEvents.forEach((evtName) => {
+        document.addEventListener(evtName, () => {
+          updateFullscreenUI(isFullScreenActive());
+        });
+      });
+
+      if (fullscreenBtn) fullscreenBtn.addEventListener('click', toggleFullScreen);
+      if (maximizeBtn) maximizeBtn.addEventListener('click', toggleFullScreen);
+
+      // Fullscreen Titlebar slide-down on top hover
+      const titlebar = document.getElementById('photos-titlebar');
+      let titlebarHoverTimer = null;
+      window.addEventListener('pointermove', (e) => {
+        const appWindow = document.getElementById('photos-app-window');
+        const isFs = isFullScreenActive() || (appWindow && appWindow.classList.contains('is-fullscreen'));
+        if (!isFs) {
+          if (titlebar) titlebar.classList.remove('is-hovered');
+          return;
+        }
+        if (e.clientY <= 52) {
+          if (titlebar) titlebar.classList.add('is-hovered');
+          clearTimeout(titlebarHoverTimer);
+        } else if (titlebar && !titlebar.matches(':hover') && openWithMenu && !openWithMenu.classList.contains('is-open')) {
+          clearTimeout(titlebarHoverTimer);
+          titlebarHoverTimer = setTimeout(() => {
+            const stillFs = isFullScreenActive() || (appWindow && appWindow.classList.contains('is-fullscreen'));
+            if (stillFs && titlebar && !titlebar.matches(':hover') && openWithMenu && !openWithMenu.classList.contains('is-open')) {
+              titlebar.classList.remove('is-hovered');
+            }
+          }, 350);
+        }
+      });
+
+      // Edge Navigation hover pills reveal
+      window.addEventListener('pointermove', (e) => {
+        const edgeThreshold = 80;
+        const w = window.innerWidth;
+        const nearLeft = e.clientX <= edgeThreshold;
+        const nearRight = e.clientX >= (w - edgeThreshold);
+        if (prevBtn) prevBtn.classList.toggle('is-edge-hovered', nearLeft);
+        if (nextBtn) nextBtn.classList.toggle('is-edge-hovered', nearRight);
+      });
+
+      // ========================================================================
+      // 6. Info Panel (ⓘ) & Open With Dropdown
+      // ========================================================================
+      function toggleInfoPanel(state) {
+        isInfoOpen = state !== undefined ? state : !isInfoOpen;
+        if (isInfoOpen) {
+          infoFlyout.style.display = 'block';
+          infoFlyout.style.visibility = 'visible';
+          infoFlyout.style.pointerEvents = 'auto';
+          void infoFlyout.offsetWidth;
+          infoFlyout.classList.add('is-open');
+          infoFlyout.setAttribute('aria-hidden', 'false');
+        } else {
+          infoFlyout.classList.remove('is-open');
+          infoFlyout.setAttribute('aria-hidden', 'true');
+          infoFlyout.style.pointerEvents = 'none';
+          setTimeout(() => {
+            if (!isInfoOpen) {
+              infoFlyout.style.display = 'none';
+              infoFlyout.style.visibility = 'hidden';
+            }
+          }, 260);
+        }
+      }
+
+      if (infoBtn) {
+        infoBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleInfoPanel();
+        });
+      }
+      if (infoCloseBtn) {
+        infoCloseBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleInfoPanel(false);
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        if (isInfoOpen && !infoFlyout.contains(e.target) && !infoBtn.contains(e.target)) {
+          toggleInfoPanel(false);
+        }
+      });
+
+      window.addEventListener('scroll', () => {
+        if (window.scrollX !== 0 || window.scrollY !== 0) {
+          window.scrollTo(0, 0);
+        }
+      }, { passive: false });
+
+      // Open dropdown toggle & seamless in-place category switching
+      if (openWithBtn && openWithMenu) {
+        openWithBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isOpen = openWithMenu.classList.toggle('is-open');
+          openWithBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!openWithBtn.contains(e.target) && !openWithMenu.contains(e.target)) {
+            openWithMenu.classList.remove('is-open');
+            openWithBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        const dropdownItems = openWithMenu.querySelectorAll('.photos-dropdown-item');
+        dropdownItems.forEach((it) => {
+          const cat = it.getAttribute('data-category');
+          it.classList.toggle('is-current', cat === currentCategory);
+
+          it.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openWithMenu.classList.remove('is-open');
+            openWithBtn.setAttribute('aria-expanded', 'false');
+
+            if (cat && cat !== currentCategory && CATEGORY_ITEMS[cat]) {
+              currentCategory = cat;
+              items = CATEGORY_ITEMS[currentCategory];
+              currentIndex = 0;
+              currentRotation = 0;
+              currentZoom = 74;
+
+              if (window.history && window.history.replaceState) {
+                window.history.replaceState(null, '', 'category.html?type=' + currentCategory);
+              }
+
+              safeSessionSet('outputs_restore_active', 'true');
+              safeSessionSet('outputs_active_category', currentCategory);
+              if (CAT_INDEX_MAP[currentCategory] !== undefined) {
+                safeSessionSet('outputs_active_index', CAT_INDEX_MAP[currentCategory].toString());
+              }
+              safeSessionRemove('outputs_scroll_pos');
+
+              dropdownItems.forEach((btn) => {
+                btn.classList.toggle('is-current', btn.getAttribute('data-category') === currentCategory);
+              });
+
+              buildFilmstrip();
+              renderActiveItem(false);
+            }
+          });
+        });
+      }
+
+      // ========================================================================
+      // 7. Navigation Back to The Outputs Window
+      // ========================================================================
+      function navigateBackToOutputs(e) {
+        if (e) e.preventDefault();
+        if (mainVideo && !mainVideo.paused) {
+          try { mainVideo.pause(); } catch(err) {}
+        }
+        const catIdx = (CAT_INDEX_MAP[currentCategory] !== undefined) ? CAT_INDEX_MAP[currentCategory] : 0;
+        safeSessionSet('outputs_restore_active', 'true');
+        safeSessionSet('outputs_active_category', currentCategory);
+        safeSessionSet('outputs_active_index', catIdx.toString());
+
+        window.location.replace(`index.html?restore=outputs&cat=${encodeURIComponent(currentCategory)}&idx=${catIdx}`);
+      }
+
+      if (closeBtn) closeBtn.addEventListener('click', navigateBackToOutputs);
+      if (minimizeBtn) minimizeBtn.addEventListener('click', navigateBackToOutputs);
+
+      // ========================================================================
+      // 8. Initialization
+      // ========================================================================
+      buildFilmstrip();
+      renderActiveItem(false);
+
+    })();
+  </script>
+
+  <!-- Fluid Directional Arrow Cursor with Vapor Trail -->
+  <script src="cursor.js" defer></script>
+</body>
+</html>

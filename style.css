@@ -1,0 +1,3866 @@
+@import url('fonts.css');
+
+/* ==========================================================================
+   Website V1 — Interactive Creative Portfolio
+   Aesthetic: Minimal Dark Desktop OS Interface with Neutral Charcoal-Black Palette
+   Layout: Full-Coverage Window Tabs + Native Bottom Taskbar Tab Dock
+   Responsiveness: Fully Mobile & Touchscreen Compatible
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. CSS Design Tokens & Variables
+   -------------------------------------------------------------------------- */
+:root {
+  /* Windows 11 Dark Mode Palette (Matched exactly to PC screen UI) */
+  --bg-pitch: #141414;
+  --bg-deep: #161616;
+  --bg-mid: #191919;
+  --bg-glow: #232323;
+  
+  /* Radial atmospheric background: Authentic Windows 11 neutral dark desktop */
+  --bg-canvas: radial-gradient(
+    130% 95% at 50% 28%,
+    var(--bg-glow) 0%,
+    var(--bg-mid) 42%,
+    var(--bg-deep) 78%,
+    var(--bg-pitch) 100%
+  );
+
+  /* Full Screen Window Tab Background */
+  --window-bg: #191919;
+
+  /* Typography Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-instruction: #71717a;
+  --text-muted: #52525b;
+  --accent-cyan: #24a3de;
+  --accent-blue: #24a3de;
+  --accent-blue-hover: #38bdf8;
+  --accent-glow: rgba(36, 163, 222, 0.45);
+  
+  /* Taskbar & Window Tokens (Sampled directly from Windows 11 screenshot) */
+  --taskbar-bg: rgba(34, 37, 39, 0.94);
+  --taskbar-border: rgba(255, 255, 255, 0.08);
+  --taskbar-height: 52px;
+
+  /* Safe Area Insets for iOS & Android with Gestures */
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  --window-header-bg: rgba(25, 25, 25, 0.96);
+  --window-header-border: rgba(255, 255, 255, 0.08);
+
+  /* Folder Icon Styling (Windows 11 Dark Mode Style) */
+  --folder-back-fill: #26292d;
+  --folder-front-fill: #2f3338;
+  --folder-divider: #24a3de;
+  --folder-stroke: rgba(255, 255, 255, 0.16);
+  --folder-stroke-hover: #24a3de;
+  --folder-stroke-active: #24a3de;
+  --folder-hover-fill: #353a40;
+  --folder-active-fill: #3b4148;
+  --folder-item-hover-bg: rgba(255, 255, 255, 0.05);
+  --folder-your-move-color: rgba(255, 255, 255, 0.88);
+  --folder-your-move-hover: #ffffff;
+  --folder-your-move-active: #ffffff;
+  --folder-your-move-shadow: drop-shadow(0 0 6px rgba(56, 189, 248, 0.65));
+
+  /* Search Pill Tokens (Sampled directly from Windows 11 screenshot: #424447) */
+  --search-pill-bg: rgba(66, 68, 71, 0.75);
+  --search-pill-border: rgba(255, 255, 255, 0.1);
+  --search-pill-hover-bg: rgba(75, 78, 82, 0.85);
+  --search-pill-hover-border: rgba(255, 255, 255, 0.2);
+  --search-pill-focus: rgba(36, 163, 222, 0.65);
+  --search-pill-focus-bg: rgba(55, 57, 60, 0.98);
+  --search-pill-focus-shadow: 0 0 14px rgba(36, 163, 222, 0.25);
+  --flyout-bg: rgba(32, 34, 37, 0.98);
+  --flyout-border: rgba(255, 255, 255, 0.12);
+
+  /* Tooltip Pill */
+  --tooltip-bg: rgba(32, 34, 37, 0.96);
+  --tooltip-border: rgba(255, 255, 255, 0.12);
+  --tooltip-text: #f3f4f6;
+
+  /* Window & System UI Tokens */
+  --window-shadow: 0 10px 45px rgba(0, 0, 0, 0.85);
+  --win-btn-hover-bg: rgba(255, 255, 255, 0.08);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.16);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.28);
+
+  /* Cards, Tables & Dossier */
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-border-subtle: rgba(255, 255, 255, 0.06);
+  --tabs-bar-bg: rgba(34, 37, 39, 0.85);
+  --tab-btn-hover-bg: rgba(255, 255, 255, 0.05);
+  --tab-btn-active-bg: rgba(36, 163, 222, 0.2);
+  --tab-btn-active-color: #ffffff;
+  --tab-btn-active-border: rgba(36, 163, 222, 0.5);
+  --quote-text: #94a3b8;
+  --desc-text: #d1d5db;
+  --timeline-line: rgba(36, 163, 222, 0.25);
+  --timeline-year: rgba(255, 255, 255, 0.52);
+  --timeline-dot-bg: #191919;
+  --timeline-dot-border: rgba(36, 163, 222, 0.55);
+
+  /* Popups & Inputs ("Your Move") */
+  --popup-bg: #181818;
+  --popup-header-bg: #131313;
+  --popup-border: rgba(255, 255, 255, 0.08);
+  --input-bg: #1f1f1f;
+  --input-focus-bg: #242424;
+  --input-border: rgba(255, 255, 255, 0.08);
+  --input-text: #f8fafc;
+  --input-placeholder: #71717a;
+  --send-btn-bg: #eef2f6;
+  --send-btn-text: #0f172a;
+
+  /* Start Menu Tokens */
+  --start-popup-bg: radial-gradient(
+    140% 120% at 50% 0%,
+    rgba(38, 38, 38, 0.97) 0%,
+    rgba(28, 28, 28, 0.98) 60%,
+    rgba(20, 20, 20, 0.98) 100%
+  );
+  --start-popup-border: rgba(255, 255, 255, 0.12);
+  --start-header-bg: rgba(28, 28, 28, 0.75);
+  --start-pills-bg: rgba(20, 20, 20, 0.75);
+  --start-btn-ring-border: rgba(255, 255, 255, 0.16);
+  --start-btn-ring-bg: #191919;
+  --pulse-dot-border: #191919;
+
+  /* Search Result Tokens */
+  --search-result-hover: rgba(255, 255, 255, 0.08);
+  --search-icon-bg: rgba(255, 255, 255, 0.06);
+  --search-icon-border: rgba(255, 255, 255, 0.12);
+  --search-badge-bg: rgba(255, 255, 255, 0.08);
+  --search-badge-border: rgba(255, 255, 255, 0.12);
+
+  --cue-indicator-border: rgba(255, 255, 255, 0.2);
+
+  /* Outputs Scroll Gallery Tokens (In Dark Mode: White Editorial Stage) */
+  --gallery-track-bg: #f7f8f9;
+  --gallery-title-color: #18181b;
+  --gallery-grid-dot: rgba(18, 28, 32, 0.1);
+  --gallery-watermark-color: rgba(20, 30, 35, 0.28);
+  --gallery-counter-color: rgba(20, 30, 35, 0.45);
+  --gallery-progress-dot: rgba(0, 0, 0, 0.15);
+  --gallery-progress-dot-active: #18181b;
+  --gallery-card-bg: #ffffff;
+  --gallery-card-border: rgba(0, 0, 0, 0.08);
+  --gallery-card-shadow: 0 4px 18px rgba(0, 0, 0, 0.08), 0 12px 36px rgba(0, 0, 0, 0.12);
+  --gallery-badge-bg: rgba(255, 255, 255, 0.9);
+  --gallery-badge-color: #18181b;
+
+  /* Typography */
+  --font-editorial: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  
+  /* Timing & OS Easing Curves */
+  --ease-os: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 160ms;
+  --duration-normal: 240ms;
+  --duration-scale: 330ms;
+}
+
+/* --------------------------------------------------------------------------
+   Windows 11 Light Mode Theme Tokens (Matched directly to Light PC screen UI)
+   -------------------------------------------------------------------------- */
+:root[data-theme="light"],
+[data-theme="light"] {
+  --bg-pitch: #dde2eb;
+  --bg-deep: #e8ecf3;
+  --bg-mid: #f3f5f8;
+  --bg-glow: #ffffff;
+  
+  --bg-canvas: radial-gradient(
+    130% 95% at 50% 28%,
+    #ffffff 0%,
+    #f4f6f9 42%,
+    #e8ecf3 78%,
+    #dde2eb 100%
+  );
+
+  --window-bg: #ffffff;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-instruction: #64748b;
+  --text-muted: #94a3b8;
+  --accent-cyan: #0078d4;
+  --accent-blue: #0078d4;
+  --accent-blue-hover: #1084d8;
+  --accent-glow: rgba(0, 120, 212, 0.25);
+
+  --taskbar-bg: rgba(243, 244, 246, 0.94);
+  --taskbar-border: rgba(0, 0, 0, 0.09);
+
+  --window-header-bg: rgba(244, 244, 244, 0.96);
+  --window-header-border: rgba(0, 0, 0, 0.08);
+
+  --folder-back-fill: #e2e8f0;
+  --folder-front-fill: #ffffff;
+  --folder-divider: #0078d4;
+  --folder-stroke: rgba(0, 0, 0, 0.22);
+  --folder-stroke-hover: #0078d4;
+  --folder-stroke-active: #0078d4;
+  --folder-hover-fill: #ffffff;
+  --folder-active-fill: #f1f5f9;
+  --folder-item-hover-bg: rgba(0, 0, 0, 0.05);
+  --folder-your-move-color: #1e293b;
+  --folder-your-move-hover: #0f172a;
+  --folder-your-move-active: #0078d4;
+  --folder-your-move-shadow: drop-shadow(0 0 4px rgba(0, 120, 212, 0.35));
+
+  --search-pill-bg: rgba(255, 255, 255, 0.92);
+  --search-pill-border: rgba(0, 0, 0, 0.12);
+  --search-pill-hover-bg: #ffffff;
+  --search-pill-hover-border: rgba(0, 0, 0, 0.2);
+  --search-pill-focus: rgba(0, 120, 212, 0.65);
+  --search-pill-focus-bg: #ffffff;
+  --search-pill-focus-shadow: 0 0 14px rgba(0, 120, 212, 0.25);
+  --flyout-bg: rgba(255, 255, 255, 0.98);
+  --flyout-border: rgba(0, 0, 0, 0.12);
+
+  --tooltip-bg: rgba(255, 255, 255, 0.98);
+  --tooltip-border: rgba(0, 0, 0, 0.12);
+  --tooltip-text: #0f172a;
+
+  --window-shadow: 0 10px 45px rgba(0, 0, 0, 0.14);
+  --win-btn-hover-bg: rgba(0, 0, 0, 0.06);
+  --scrollbar-thumb: rgba(0, 0, 0, 0.18);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.32);
+
+  --card-bg: rgba(0, 0, 0, 0.025);
+  --card-border: rgba(0, 0, 0, 0.08);
+  --card-border-subtle: rgba(0, 0, 0, 0.05);
+  --tabs-bar-bg: rgba(241, 245, 249, 0.92);
+  --tab-btn-hover-bg: rgba(0, 0, 0, 0.05);
+  --tab-btn-active-bg: #ffffff;
+  --tab-btn-active-color: #0078d4;
+  --tab-btn-active-border: rgba(0, 120, 212, 0.35);
+  --quote-text: #475569;
+  --desc-text: #334155;
+  --timeline-line: rgba(0, 120, 212, 0.25);
+  --timeline-year: rgba(0, 0, 0, 0.58);
+  --timeline-dot-bg: #ffffff;
+  --timeline-dot-border: rgba(0, 120, 212, 0.55);
+
+  --popup-bg: #ffffff;
+  --popup-header-bg: #f4f4f4;
+  --popup-border: rgba(0, 0, 0, 0.12);
+  --input-bg: #f8fafc;
+  --input-focus-bg: #ffffff;
+  --input-border: rgba(0, 0, 0, 0.12);
+  --input-text: #0f172a;
+  --input-placeholder: #94a3b8;
+  --send-btn-bg: #0f172a;
+  --send-btn-text: #ffffff;
+
+  --start-popup-bg: rgba(255, 255, 255, 0.97);
+  --start-popup-border: rgba(0, 0, 0, 0.12);
+  --start-header-bg: rgba(246, 248, 250, 0.88);
+  --start-pills-bg: rgba(0, 0, 0, 0.04);
+  --start-btn-ring-border: rgba(0, 0, 0, 0.14);
+  --start-btn-ring-bg: #ffffff;
+  --pulse-dot-border: #ffffff;
+
+  --search-result-hover: rgba(0, 0, 0, 0.05);
+  --search-icon-bg: #f1f5f9;
+  --search-icon-border: rgba(0, 0, 0, 0.08);
+  --search-badge-bg: rgba(0, 0, 0, 0.05);
+  --search-badge-border: rgba(0, 0, 0, 0.08);
+
+  --cue-indicator-border: rgba(0, 0, 0, 0.18);
+
+  /* Outputs Scroll Gallery Tokens (In Light Mode: Dark Stage with White Work Title Typography) */
+  --gallery-track-bg: #141414;
+  --gallery-title-color: #ffffff;
+  --gallery-grid-dot: rgba(255, 255, 255, 0.1);
+  --gallery-watermark-color: rgba(255, 255, 255, 0.35);
+  --gallery-counter-color: rgba(255, 255, 255, 0.55);
+  --gallery-progress-dot: rgba(255, 255, 255, 0.2);
+  --gallery-progress-dot-active: #ffffff;
+  --gallery-card-bg: #1e2124;
+  --gallery-card-border: rgba(255, 255, 255, 0.12);
+  --gallery-card-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 18px 48px rgba(0, 0, 0, 0.7);
+  --gallery-badge-bg: rgba(28, 32, 36, 0.9);
+  --gallery-badge-color: #ffffff;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg-pitch: #dde2eb;
+    --bg-deep: #e8ecf3;
+    --bg-mid: #f3f5f8;
+    --bg-glow: #ffffff;
+    
+    --bg-canvas: radial-gradient(
+      130% 95% at 50% 28%,
+      #ffffff 0%,
+      #f4f6f9 42%,
+      #e8ecf3 78%,
+      #dde2eb 100%
+    );
+
+    --window-bg: #ffffff;
+
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-instruction: #64748b;
+    --text-muted: #94a3b8;
+    --accent-cyan: #0078d4;
+    --accent-blue: #0078d4;
+    --accent-blue-hover: #1084d8;
+    --accent-glow: rgba(0, 120, 212, 0.25);
+
+    --taskbar-bg: rgba(243, 244, 246, 0.94);
+    --taskbar-border: rgba(0, 0, 0, 0.09);
+
+    --window-header-bg: rgba(244, 244, 244, 0.96);
+    --window-header-border: rgba(0, 0, 0, 0.08);
+
+    --folder-back-fill: #e2e8f0;
+    --folder-front-fill: #ffffff;
+    --folder-divider: #0078d4;
+    --folder-stroke: rgba(0, 0, 0, 0.22);
+    --folder-stroke-hover: #0078d4;
+    --folder-stroke-active: #0078d4;
+    --folder-hover-fill: #ffffff;
+    --folder-active-fill: #f1f5f9;
+    --folder-item-hover-bg: rgba(0, 0, 0, 0.05);
+    --folder-your-move-color: #1e293b;
+    --folder-your-move-hover: #0f172a;
+    --folder-your-move-active: #0078d4;
+    --folder-your-move-shadow: drop-shadow(0 0 4px rgba(0, 120, 212, 0.35));
+
+    --search-pill-bg: rgba(255, 255, 255, 0.92);
+    --search-pill-border: rgba(0, 0, 0, 0.12);
+    --search-pill-hover-bg: #ffffff;
+    --search-pill-hover-border: rgba(0, 0, 0, 0.2);
+    --search-pill-focus: rgba(0, 120, 212, 0.65);
+    --search-pill-focus-bg: #ffffff;
+    --search-pill-focus-shadow: 0 0 14px rgba(0, 120, 212, 0.25);
+    --flyout-bg: rgba(255, 255, 255, 0.98);
+    --flyout-border: rgba(0, 0, 0, 0.12);
+
+    --tooltip-bg: rgba(255, 255, 255, 0.98);
+    --tooltip-border: rgba(0, 0, 0, 0.12);
+    --tooltip-text: #0f172a;
+
+    --window-shadow: 0 10px 45px rgba(0, 0, 0, 0.14);
+    --win-btn-hover-bg: rgba(0, 0, 0, 0.06);
+    --scrollbar-thumb: rgba(0, 0, 0, 0.18);
+    --scrollbar-thumb-hover: rgba(0, 0, 0, 0.32);
+
+    --card-bg: rgba(0, 0, 0, 0.025);
+    --card-border: rgba(0, 0, 0, 0.08);
+    --card-border-subtle: rgba(0, 0, 0, 0.05);
+    --tabs-bar-bg: rgba(241, 245, 249, 0.92);
+    --tab-btn-hover-bg: rgba(0, 0, 0, 0.05);
+    --tab-btn-active-bg: #ffffff;
+    --tab-btn-active-color: #0078d4;
+    --tab-btn-active-border: rgba(0, 120, 212, 0.35);
+    --quote-text: #475569;
+    --desc-text: #334155;
+    --timeline-line: rgba(0, 120, 212, 0.25);
+    --timeline-year: rgba(0, 0, 0, 0.58);
+    --timeline-dot-bg: #ffffff;
+    --timeline-dot-border: rgba(0, 120, 212, 0.55);
+
+    --popup-bg: #ffffff;
+    --popup-header-bg: #f4f4f4;
+    --popup-border: rgba(0, 0, 0, 0.12);
+    --input-bg: #f8fafc;
+    --input-focus-bg: #ffffff;
+    --input-border: rgba(0, 0, 0, 0.12);
+    --input-text: #0f172a;
+    --input-placeholder: #94a3b8;
+    --send-btn-bg: #0f172a;
+    --send-btn-text: #ffffff;
+
+    --start-popup-bg: rgba(255, 255, 255, 0.97);
+    --start-popup-border: rgba(0, 0, 0, 0.12);
+    --start-header-bg: rgba(246, 248, 250, 0.88);
+    --start-pills-bg: rgba(0, 0, 0, 0.04);
+    --start-btn-ring-border: rgba(0, 0, 0, 0.14);
+    --start-btn-ring-bg: #ffffff;
+    --pulse-dot-border: #ffffff;
+
+    --search-result-hover: rgba(0, 0, 0, 0.05);
+    --search-icon-bg: #f1f5f9;
+    --search-icon-border: rgba(0, 0, 0, 0.08);
+    --search-badge-bg: rgba(0, 0, 0, 0.05);
+    --search-badge-border: rgba(0, 0, 0, 0.08);
+
+    --cue-indicator-border: rgba(0, 0, 0, 0.18);
+
+    /* Outputs Scroll Gallery Tokens (In Light Mode: Dark Stage with White Work Title Typography) */
+    --gallery-track-bg: #141414;
+    --gallery-title-color: #ffffff;
+    --gallery-grid-dot: rgba(255, 255, 255, 0.1);
+    --gallery-watermark-color: rgba(255, 255, 255, 0.35);
+    --gallery-counter-color: rgba(255, 255, 255, 0.55);
+    --gallery-progress-dot: rgba(255, 255, 255, 0.2);
+    --gallery-progress-dot-active: #ffffff;
+    --gallery-card-bg: #1e2124;
+    --gallery-card-border: rgba(255, 255, 255, 0.12);
+    --gallery-card-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 18px 48px rgba(0, 0, 0, 0.7);
+    --gallery-badge-bg: rgba(28, 32, 36, 0.9);
+    --gallery-badge-color: #ffffff;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   2. Base Reset & Full Viewport Stage
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background-color: var(--bg-pitch);
+  color: var(--text-primary);
+  font-family: var(--font-editorial);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --------------------------------------------------------------------------
+   3. Main Desktop Stage
+   -------------------------------------------------------------------------- */
+.desktop-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: var(--bg-pitch);
+  user-select: none;
+}
+
+/* --------------------------------------------------------------------------
+   4. Workspace Area: Covers 100% of Screen ABOVE Taskbar
+   -------------------------------------------------------------------------- */
+.workspace-area {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  height: calc(100vh - var(--taskbar-height) - var(--safe-bottom));
+  height: calc(100dvh - var(--taskbar-height) - var(--safe-bottom));
+  overflow: hidden;
+}
+
+/* --- The Mind: Desktop Wallpaper View --- */
+.desktop-wallpaper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-canvas);
+  padding: clamp(1.5rem, 4vh, 4rem) clamp(1rem, 4vw, 4rem);
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity var(--duration-normal) var(--ease-os);
+  z-index: 1;
+}
+
+.desktop-wallpaper[hidden] {
+  display: none !important;
+}
+
+.mind-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 0.5rem;
+}
+
+.headline-primary {
+  font-size: clamp(1.8rem, 4.4vw + 0.5rem, 3.85rem);
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: -0.028em;
+  color: var(--text-primary);
+  text-wrap: balance;
+  margin: 0 auto;
+}
+
+.supporting-text {
+  font-size: clamp(0.92rem, 1.15vw + 0.2rem, 1.2rem);
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--text-secondary);
+  margin-top: clamp(1rem, 2.5vh, 1.8rem);
+}
+
+.wallpaper-guidance,
+.wallpaper-instruction {
+  margin-bottom: clamp(0.75rem, 2vh, 1.4rem);
+  text-align: center;
+  padding: 0 1rem;
+  z-index: 2;
+  user-select: none;
+}
+
+.guidance-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  position: relative;
+}
+
+.guidance-text {
+  font-family: var(--font-sans);
+  font-size: clamp(0.88rem, 1.1vw, 1.05rem);
+  font-weight: 350;
+  letter-spacing: -0.01em;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  transition: color var(--duration-normal) ease;
+}
+
+.guidance-arrow {
+  width: 46px;
+  height: 38px;
+  color: var(--accent-cyan);
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px var(--accent-glow));
+}
+
+.guidance-arrow .arrow-stem {
+  stroke-dasharray: 62;
+  stroke-dashoffset: 62;
+  animation: stemDrawVanish 3.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.guidance-arrow .arrow-head {
+  stroke-dasharray: 34;
+  stroke-dashoffset: 34;
+  animation: headDrawVanish 3.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes stemDrawVanish {
+  0% {
+    stroke-dashoffset: 62;
+    opacity: 1;
+  }
+  14% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  68% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  82% {
+    stroke-dashoffset: -62;
+    opacity: 1;
+  }
+  83% {
+    stroke-dashoffset: -62;
+    opacity: 0;
+  }
+  85% {
+    stroke-dashoffset: 62;
+    opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: 62;
+    opacity: 0;
+  }
+}
+
+@keyframes headDrawVanish {
+  0%, 9% {
+    stroke-dashoffset: 34;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  16% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  68% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  79% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  84% {
+    stroke-dashoffset: -34;
+    opacity: 1;
+  }
+  85% {
+    stroke-dashoffset: -34;
+    opacity: 0;
+  }
+  87% {
+    stroke-dashoffset: 34;
+    opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: 34;
+    opacity: 0;
+  }
+}
+
+.instruction-text {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   5. Full-Screen Window Tabs (Cover 100% of remaining screen above taskbar)
+   -------------------------------------------------------------------------- */
+.desktop-window-tab {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--window-bg);
+  box-shadow: 0 10px 45px rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  overflow: hidden;
+  will-change: transform, opacity, filter;
+  transform-origin: 50% 100%; /* Dynamically calculated by JS to match folder origin */
+  transition: transform var(--duration-scale) var(--ease-os),
+              opacity var(--duration-scale) ease,
+              filter var(--duration-scale) ease;
+  z-index: 10;
+}
+
+/* CRITICAL: Explicitly ensure [hidden] tabs are completely removed from layout */
+.desktop-window-tab[hidden] {
+  display: none !important;
+}
+
+/* Window Scale Animation States */
+.desktop-window-tab.window-scaling-in {
+  transform: scale(0.06);
+  opacity: 0;
+  filter: blur(10px);
+  pointer-events: none;
+}
+
+.desktop-window-tab.window-opened {
+  transform: scale(1);
+  opacity: 1;
+  filter: blur(0px);
+  pointer-events: auto;
+}
+
+.desktop-window-tab.window-scaling-out {
+  transform: scale(0.06);
+  opacity: 0;
+  filter: blur(10px);
+  pointer-events: none;
+}
+
+/* --- Window Titlebar --- */
+.window-titlebar {
+  height: 42px;
+  background: var(--window-header-bg);
+  border-bottom: 1px solid var(--window-header-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  flex-shrink: 0;
+}
+
+.titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  overflow: hidden;
+}
+
+.titlebar-folder-icon {
+  width: 17px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.titlebar-path {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.titlebar-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.win-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-instruction);
+  width: 32px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.85rem;
+  touch-action: manipulation;
+  transition: background-color var(--duration-fast) ease, color var(--duration-fast) ease;
+}
+
+.win-btn:hover {
+  background: var(--win-btn-hover-bg);
+  color: var(--text-primary);
+}
+
+.win-btn-close:hover {
+  background: rgba(239, 68, 68, 0.28);
+  color: #fca5a5;
+}
+
+/* --- Window Viewport Body --- */
+.window-viewport-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  padding: clamp(1.5rem, 4vh, 4rem) clamp(1rem, 5vw, 6rem);
+}
+
+/* Custom scrollbar */
+.window-viewport-body::-webkit-scrollbar {
+  width: 6px;
+}
+.window-viewport-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.window-viewport-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+}
+.window-viewport-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.window-content-container {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+/* Section Header inside Window */
+.section-header {
+  margin-bottom: clamp(1.4rem, 3vh, 2.6rem);
+}
+
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-instruction);
+  margin-bottom: 0.35rem;
+}
+
+.section-title {
+  font-size: clamp(1.8rem, 3.2vw + 0.4rem, 2.75rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 0.45rem;
+}
+
+.section-subtitle {
+  font-size: clamp(0.88rem, 1vw + 0.15rem, 1.05rem);
+  font-weight: 300;
+  color: var(--text-secondary);
+  max-width: 680px;
+  line-height: 1.5;
+}
+
+/* --- Section 2: The Outputs Index --- */
+.outputs-index {
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.index-row {
+  display: grid;
+  grid-template-columns: 50px 1.4fr 1.4fr auto;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.1rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.92rem;
+  text-align: left;
+  border-radius: 6px;
+  transition: background-color var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
+}
+
+.index-row:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.index-row.is-highlighted {
+  background-color: rgba(36, 163, 222, 0.14);
+  box-shadow: 0 0 16px rgba(36, 163, 222, 0.25);
+}
+
+.row-num {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: var(--text-instruction);
+}
+
+.row-category {
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+.row-format {
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+  font-weight: 300;
+}
+
+.row-status {
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--text-instruction);
+  padding: 3px 9px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* --- Section 3: The Human (About / PC Settings Style Dossier) --- */
+.human-viewport-body {
+  padding: 0 !important;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg-canvas);
+  position: relative;
+}
+
+.human-system-stage {
+  min-height: calc(100vh - var(--taskbar-height) - 42px);
+  min-height: calc(100dvh - var(--taskbar-height) - 42px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: clamp(1.25rem, 3vh, 2.25rem) clamp(1.5rem, 5vw, 4.5rem) 1.5rem;
+  box-sizing: border-box;
+}
+
+/* Sub-tab Bar Situated Just Above the Headline */
+.human-tabs-bar {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(34, 37, 39, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 3px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  gap: 3px;
+  margin-bottom: 1.15rem;
+  align-self: flex-start;
+}
+
+.human-tab-btn {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-editorial);
+  font-size: 0.85rem;
+  font-weight: 400;
+  padding: 6px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--duration-fast) ease;
+  white-space: nowrap;
+}
+
+.human-tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.human-tab-btn.is-active {
+  background: rgba(36, 163, 222, 0.2);
+  color: #ffffff;
+  font-weight: 500;
+  border-color: rgba(36, 163, 222, 0.5);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+
+/* Main 2-Column System Profile Layout */
+.human-main-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 310px) 1fr;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+  min-height: calc(100vh - var(--taskbar-height) - 42px - clamp(1.25rem, 3vh, 2.25rem) * 2);
+  min-height: calc(100dvh - var(--taskbar-height) - 42px - clamp(1.25rem, 3vh, 2.25rem) * 2);
+  max-width: 1040px;
+  margin: 0 auto;
+  width: 100%;
+  flex: 1 0 auto;
+  position: relative;
+  padding-bottom: clamp(2.5rem, 6vh, 4.5rem);
+}
+
+/* Left Column: Circular Photo Frame (Fixed in the vertical center of the screen despite scroll) */
+.human-avatar-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: sticky;
+  top: calc((100vh - var(--taskbar-height) - 42px) / 2);
+  top: calc((100dvh - var(--taskbar-height) - 42px) / 2);
+  transform: translateY(-50%);
+  margin-top: calc((100vh - var(--taskbar-height) - 42px) / 2 - clamp(1.25rem, 3vh, 2.25rem));
+  margin-top: calc((100dvh - var(--taskbar-height) - 42px) / 2 - clamp(1.25rem, 3vh, 2.25rem));
+  margin-bottom: auto;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.human-avatar-frame {
+  position: relative;
+  width: clamp(210px, 22vw, 290px);
+  height: clamp(210px, 22vw, 290px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--accent-blue);
+  box-shadow: 
+    0 0 25px var(--accent-glow),
+    inset 0 0 25px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  background: var(--window-bg);
+}
+
+.human-avatar-glow-ring {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.human-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s var(--ease-os);
+}
+
+.human-avatar-frame:hover .human-avatar-img {
+  transform: scale(1.04);
+}
+
+.human-avatar-rim {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+.human-status-pill {
+  margin-top: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 5px 14px;
+}
+
+.status-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.status-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.03em;
+}
+
+/* Right Column: Content Column (Fixed top position matching Overview - only extends downwards) */
+.human-panels-column {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: max(1.5rem, calc((100vh - var(--taskbar-height) - 42px) / 2 - 220px - clamp(1.25rem, 3vh, 2.25rem)));
+  margin-top: max(1.5rem, calc((100dvh - var(--taskbar-height) - 42px) / 2 - 220px - clamp(1.25rem, 3vh, 2.25rem)));
+  margin-bottom: clamp(2rem, 5vh, 4rem);
+}
+
+/* Sub-tab Information Card Frame with Thin Fading Border */
+.human-subtab-frame {
+  position: relative;
+  background: var(--card-bg);
+  border-radius: 14px;
+  padding: clamp(1.25rem, 2.2vw, 1.85rem) clamp(1.5rem, 2.8vw, 2.25rem);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--window-shadow);
+  overflow: hidden;
+  min-height: 400px;
+  box-sizing: border-box;
+}
+
+/* 1px Border that fades towards the right */
+.human-subtab-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  padding: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.08) 35%,
+    rgba(255, 255, 255, 0.03) 70%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.human-tab-panel {
+  display: none;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.human-tab-panel.is-active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.panel-header-block {
+  margin-bottom: 1.25rem;
+}
+
+.system-badge-eyebrow {
+  display: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-cyan);
+  margin-bottom: 0.75rem;
+}
+
+/* Commanding hero headline for Overview (Fitted to 2 lines within standard 1040px frame) */
+.human-headline {
+  font-family: var(--font-editorial);
+  font-size: clamp(1.75rem, 2.15vw, 2.12rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.022em;
+  color: var(--text-primary);
+  margin-bottom: 1.35rem;
+  max-width: 820px;
+}
+
+.human-headline .headline-part {
+  display: block;
+}
+
+.human-headline-sub {
+  font-size: clamp(1.55rem, 2.3vw, 2.1rem);
+  line-height: 1.22;
+  margin-bottom: 1rem;
+}
+
+.human-sub-lead {
+  font-family: var(--font-editorial);
+  font-size: clamp(1.06rem, 1.35vw, 1.25rem);
+  font-weight: 300;
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+  max-width: 720px;
+}
+
+.human-body-quote {
+  font-family: var(--font-editorial);
+  font-size: clamp(0.96rem, 1.2vw, 1.12rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--quote-text);
+  margin-bottom: 2.25rem;
+  line-height: 1.58;
+  border-left: 2px solid var(--accent-blue);
+  padding-left: 1.15rem;
+  max-width: 700px;
+}
+
+.human-narrative-p {
+  font-family: var(--font-editorial);
+  font-size: 0.94rem;
+  font-weight: 300;
+  line-height: 1.62;
+  color: var(--desc-text);
+  margin-bottom: 0.85rem;
+}
+
+/* PC Hardware Spec Sheet Style Grid */
+.human-specs-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0;
+}
+
+.human-specs-grid .spec-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 175px) 1fr;
+  gap: 1.15rem;
+  align-items: baseline;
+  font-size: 0.86rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--card-border-subtle);
+}
+
+.human-specs-grid .spec-row:last-child {
+  border-bottom: none;
+}
+
+.human-specs-grid .spec-key {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-instruction);
+}
+
+.human-specs-grid .spec-val {
+  font-family: var(--font-editorial);
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+/* Action Buttons (About Mac style) */
+.human-action-bar {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.human-btn {
+  font-family: var(--font-editorial);
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 7px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--duration-fast) ease;
+}
+
+.human-btn-primary {
+  background: #24a3de;
+  color: #ffffff;
+  border: 1px solid #24a3de;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.human-btn-primary:hover {
+  background: #38bdf8;
+  border-color: #38bdf8;
+  box-shadow: 0 0 12px rgba(36, 163, 222, 0.4);
+  transform: translateY(-1px);
+}
+
+.human-btn-secondary {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.human-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   The Journey So Far (Interactive Timeline Table under The Human Dossier)
+   - Preserves the outer table outline matching the Details tab
+   - No sub rows (no inner row borders)
+   - Left: Year (dull by default, brightens on hover)
+   - Middle: Continuous vertical line connecting 3 interactive glowing dots
+   - Right: Description (barely visible by default, clearly reveals on hover)
+   ========================================================================== */
+#panel-experience .panel-header-block {
+  margin-bottom: 0.65rem;
+}
+
+#panel-experience .human-headline-sub {
+  margin-bottom: 0.35rem;
+}
+
+.human-journey-table {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 0.65rem 0.5rem 0.65rem 0.85rem;
+  margin: 0.85rem -2.85rem 0.25rem 0;
+  box-sizing: border-box;
+}
+
+.journey-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.journey-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 100px 16px 1fr;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0;
+  cursor: default;
+}
+
+/* 1. Year on Left (Visible but dull by default, brightens on hover) */
+.journey-year {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: clamp(0.74rem, 0.9vw, 0.80rem);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--timeline-year);
+  white-space: nowrap;
+  align-self: center;
+  padding: 0;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+  user-select: none;
+}
+
+/* 2. Vertical Line with 3 Dots (Center-aligned with Year and Content) */
+.journey-node {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: stretch;
+  height: 100%;
+}
+
+/* Continuous vertical connecting line between dots (connecting center of Dot 1 -> Dot 2 -> Dot 3) */
+.journey-node::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 1.5px;
+  background: var(--timeline-line);
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.journey-item:nth-child(1) .journey-node::before {
+  top: 50%;
+  bottom: 0;
+}
+
+.journey-item:nth-child(2) .journey-node::before {
+  top: 0;
+  bottom: 0;
+}
+
+.journey-item:nth-child(3) .journey-node::before {
+  top: 0;
+  bottom: 50%;
+}
+
+/* Dynamic Smooth Glowing Line Segment (Smooth color & glow fade without any hard cut) */
+.journey-node::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.journey-item:nth-child(1) .journey-node::after {
+  top: 50%;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--accent-blue) 0%,
+    var(--accent-blue) 15%,
+    rgba(36, 163, 222, 0.7) 40%,
+    rgba(36, 163, 222, 0.25) 75%,
+    transparent 100%
+  );
+  box-shadow: 0 0 10px var(--accent-glow);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 25%, rgba(0, 0, 0, 0.6) 65%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 25%, rgba(0, 0, 0, 0.6) 65%, transparent 100%);
+}
+
+.journey-item:nth-child(2) .journey-node::after {
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(36, 163, 222, 0.25) 15%,
+    rgba(36, 163, 222, 0.75) 32%,
+    var(--accent-blue) 48%,
+    var(--accent-blue) 52%,
+    rgba(36, 163, 222, 0.75) 68%,
+    rgba(36, 163, 222, 0.25) 85%,
+    transparent 100%
+  );
+  box-shadow: 0 0 10px var(--accent-glow);
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 18%,
+    #000 38%,
+    #000 62%,
+    rgba(0, 0, 0, 0.3) 82%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 18%,
+    #000 38%,
+    #000 62%,
+    rgba(0, 0, 0, 0.3) 82%,
+    transparent 100%
+  );
+}
+
+.journey-item:nth-child(3) .journey-node::after {
+  top: 0;
+  bottom: 50%;
+  background: linear-gradient(
+    to top,
+    var(--accent-blue) 0%,
+    var(--accent-blue) 15%,
+    rgba(36, 163, 222, 0.7) 40%,
+    rgba(36, 163, 222, 0.25) 75%,
+    transparent 100%
+  );
+  box-shadow: 0 0 10px var(--accent-glow);
+  mask-image: linear-gradient(to top, #000 0%, #000 25%, rgba(0, 0, 0, 0.6) 65%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 25%, rgba(0, 0, 0, 0.6) 65%, transparent 100%);
+}
+
+[data-theme="light"] .journey-item:nth-child(1) .journey-node::after {
+  background: linear-gradient(
+    to bottom,
+    var(--accent-blue) 0%,
+    var(--accent-blue) 15%,
+    rgba(0, 120, 212, 0.7) 40%,
+    rgba(0, 120, 212, 0.25) 75%,
+    transparent 100%
+  );
+}
+
+[data-theme="light"] .journey-item:nth-child(2) .journey-node::after {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 120, 212, 0.25) 15%,
+    rgba(0, 120, 212, 0.75) 32%,
+    var(--accent-blue) 48%,
+    var(--accent-blue) 52%,
+    rgba(0, 120, 212, 0.75) 68%,
+    rgba(0, 120, 212, 0.25) 85%,
+    transparent 100%
+  );
+}
+
+[data-theme="light"] .journey-item:nth-child(3) .journey-node::after {
+  background: linear-gradient(
+    to top,
+    var(--accent-blue) 0%,
+    var(--accent-blue) 15%,
+    rgba(0, 120, 212, 0.7) 40%,
+    rgba(0, 120, 212, 0.25) 75%,
+    transparent 100%
+  );
+}
+
+/* Interactive Dot Node */
+.journey-dot {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  margin: 0;
+  border-radius: 50%;
+  background: var(--timeline-dot-bg);
+  border: 2px solid var(--timeline-dot-border);
+  box-shadow: 0 0 5px var(--accent-glow);
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+/* Larger hit target for mouse/touch */
+.journey-dot::after {
+  content: '';
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+}
+
+/* 3. Description on Right (Readable when unhovered, radiates glow on hover/active) */
+.journey-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 1.15rem 0;
+  opacity: 0.58;
+  transform: translateX(0);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="light"] .journey-content {
+  opacity: 0.65;
+}
+
+.journey-role {
+  font-family: var(--font-editorial);
+  font-size: 0.94rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.25;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.journey-inst {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.74rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--accent-cyan);
+  margin-bottom: 0.12rem;
+  line-height: 1.35;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.journey-desc {
+  font-family: var(--font-editorial);
+  font-size: 0.815rem;
+  font-weight: 300;
+  line-height: 1.44;
+  letter-spacing: -0.012em;
+  color: var(--desc-text);
+  margin: 0;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* ==========================================================================
+   Interactive Hover & Focus Behaviors:
+   - Year brightens with cyan glow
+   - Dot glows and expands
+   - Connecting line smoothly illuminates with gradient fade (zero hard cut)
+   - Description reveals fully with text glow
+   ========================================================================== */
+.journey-item:hover .journey-year,
+.journey-item.is-focused .journey-year,
+.journey-year:hover {
+  color: var(--text-primary);
+  text-shadow: 0 0 10px var(--accent-glow);
+}
+
+.journey-item:hover .journey-dot,
+.journey-item.is-focused .journey-dot,
+.journey-dot:hover,
+.journey-dot:focus-visible {
+  background: var(--accent-blue);
+  border-color: #ffffff;
+  transform: scale(1.45);
+  box-shadow: 0 0 12px var(--accent-blue), 0 0 24px var(--accent-glow);
+}
+
+.journey-item:hover .journey-node::after,
+.journey-item.is-focused .journey-node::after {
+  opacity: 1;
+}
+
+.journey-item:hover .journey-content,
+.journey-item.is-focused .journey-content,
+.journey-dot:focus-visible ~ .journey-content {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+.journey-item:hover .journey-role,
+.journey-item.is-focused .journey-role {
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.4), 0 0 20px var(--accent-glow);
+}
+
+.journey-item:hover .journey-inst,
+.journey-item.is-focused .journey-inst {
+  color: var(--accent-blue);
+  text-shadow: 0 0 10px var(--accent-glow);
+}
+
+.journey-item:hover .journey-desc,
+.journey-item.is-focused .journey-desc {
+  color: var(--text-primary);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
+}
+
+[data-theme="light"] .journey-item:hover .journey-role,
+[data-theme="light"] .journey-item.is-focused .journey-role {
+  color: #000000;
+  text-shadow: 0 0 10px rgba(0, 120, 212, 0.25);
+}
+
+[data-theme="light"] .journey-item:hover .journey-inst,
+[data-theme="light"] .journey-item.is-focused .journey-inst {
+  color: var(--accent-blue);
+  text-shadow: 0 0 8px rgba(0, 120, 212, 0.3);
+}
+
+[data-theme="light"] .journey-item:hover .journey-desc,
+[data-theme="light"] .journey-item.is-focused .journey-desc {
+  color: #111111;
+  text-shadow: none;
+}
+
+/* Responsive adjustment for narrower screens */
+@media (max-width: 720px) {
+  .human-journey-table {
+    padding: 1rem 0.85rem;
+    margin-right: 0;
+  }
+  .journey-item {
+    grid-template-columns: 100px 18px 1fr;
+    gap: 0.75rem;
+    padding: 0;
+  }
+  .journey-content {
+    padding: 1rem 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .journey-item {
+    grid-template-columns: 88px 16px 1fr;
+    gap: 0.55rem;
+  }
+  .journey-year {
+    font-size: 0.72rem;
+  }
+  .journey-desc {
+    font-size: 0.82rem;
+  }
+}
+
+/* System Copyright Footer */
+.human-system-footer {
+  text-align: center;
+  margin-top: clamp(1.5rem, 3vh, 2.5rem);
+  padding-top: 1rem;
+  border-top: 1px solid rgba(34, 60, 68, 0.25);
+}
+
+.system-copyright {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.68rem;
+  color: rgba(126, 150, 159, 0.55);
+  letter-spacing: 0.04em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 820px) {
+  .human-main-layout {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 1.75rem;
+  }
+
+  .human-avatar-column {
+    margin: 0 auto 1.5rem auto;
+    position: static;
+    transform: none;
+    padding-top: 0;
+    align-self: center;
+  }
+
+  .human-panels-column {
+    margin: 0;
+  }
+
+  .human-tabs-bar {
+    align-self: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .human-subtab-frame {
+    padding: clamp(1.25rem, 3.5vw, 1.85rem);
+    text-align: left;
+  }
+
+  .human-specs-grid .spec-row {
+    grid-template-columns: 1fr;
+    text-align: left;
+    gap: 0.25rem;
+  }
+
+  .human-action-bar {
+    justify-content: flex-start;
+  }
+
+  .timeline-item {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+    text-align: left;
+  }
+
+  .human-body-quote {
+    text-align: left;
+  }
+
+  .human-narrative-p {
+    text-align: left;
+  }
+}
+
+@media (max-width: 640px) {
+  #section-the-human .titlebar-path {
+    display: none;
+  }
+  .human-tabs-bar {
+    padding: 2px;
+    gap: 2px;
+  }
+  .human-tab-btn {
+    padding: 5px 12px;
+    font-size: 0.78rem;
+  }
+  .human-headline {
+    font-size: 1.8rem;
+  }
+}
+
+/* ==========================================================================
+   Section 4: Floating Window: Your Move (Contact Modal inspired by UI.png)
+   - Dark modern floating window over the underlying page
+   - macOS Traffic Lights (Red / Yellow / Green), center title, options button
+   - "Let's hear it!" header + subtitle
+   - Questions 01, 02, 03 with dark inputs
+   - Footer bar with "That's about it. No long forms.", center circle, "Send it ↗"
+   ========================================================================== */
+
+/* --- Backdrop overlay for floating window --- */
+.your-move-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1060;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  overscroll-behavior: contain;
+  transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.your-move-backdrop.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* --- Floating Window Container --- */
+.your-move-window {
+  position: fixed;
+  z-index: 1070;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -46%) scale(0.96);
+  width: min(680px, calc(100vw - 32px));
+  max-height: min(720px, calc(100vh - var(--taskbar-height) - var(--safe-bottom) - 36px));
+  max-height: min(720px, calc(100dvh - var(--taskbar-height) - var(--safe-bottom) - 36px));
+  background: var(--popup-bg);
+  border: 1px solid var(--popup-border);
+  border-radius: 14px;
+  box-shadow: var(--window-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.24s ease;
+  box-sizing: border-box;
+}
+
+.your-move-window.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* --- Window Titlebar --- */
+.your-move-titlebar {
+  flex: 0 0 auto;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.5rem 0 1.25rem;
+  background: var(--popup-header-bg);
+  border-bottom: 1px solid var(--window-header-border);
+  user-select: none;
+}
+
+.your-move-titlebar-left {
+  display: flex;
+  align-items: center;
+}
+
+.your-move-titlebar-title {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text-instruction);
+  text-transform: uppercase;
+}
+
+/* --- Window Body Container --- */
+.your-move-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: 1.75rem 2rem 1.6rem;
+  box-sizing: border-box;
+}
+
+.your-move-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.your-move-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.your-move-body::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+.your-move-body::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* --- Header Lead --- */
+.your-move-header-lead {
+  margin-bottom: 1.15rem;
+}
+
+.your-move-headline {
+  font-size: clamp(1.6rem, 3.2vw, 1.95rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.45rem 0;
+}
+
+.your-move-subtext {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.your-move-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--card-border);
+  margin: 1.35rem 0 1.5rem;
+}
+
+/* --- Form Fields --- */
+.your-move-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group-block {
+  margin-bottom: 1.25rem;
+}
+
+.form-field-label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.55rem;
+  letter-spacing: -0.01em;
+}
+
+.field-index {
+  color: var(--text-instruction);
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.form-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.your-move-textarea,
+.your-move-input {
+  width: 100%;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--input-text);
+  line-height: 1.45;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  outline: none;
+}
+
+.your-move-textarea {
+  min-height: 86px;
+  max-height: 160px;
+  resize: vertical;
+}
+
+.your-move-textarea::placeholder,
+.your-move-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+.your-move-textarea:focus,
+.your-move-input:focus {
+  background: var(--input-focus-bg);
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 14px var(--accent-glow);
+}
+
+.form-group-block.has-error .your-move-textarea,
+.form-group-block.has-error .your-move-input {
+  border-color: rgba(239, 68, 68, 0.7);
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.2);
+}
+
+/* --- Footer Bar --- */
+.your-move-footer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.25rem;
+}
+
+.footer-note-text {
+  font-size: 0.84rem;
+  color: #64748b;
+  user-select: none;
+}
+
+.footer-action-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.your-move-send-btn {
+  background: var(--send-btn-bg);
+  color: var(--send-btn-text);
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.65rem 1.35rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  transition: all 0.18s ease;
+}
+
+.send-btn-icon {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.18s ease;
+}
+
+.your-move-send-btn:hover {
+  background: var(--accent-blue);
+  color: #ffffff;
+  box-shadow: 0 6px 20px var(--accent-glow);
+  transform: translateY(-1px);
+}
+
+.your-move-send-btn:hover .send-btn-icon {
+  transform: translate(2px, -2px);
+}
+
+.your-move-send-btn:active {
+  transform: translateY(1px);
+}
+
+/* Status Banner */
+.your-move-status-banner {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.your-move-status-banner.is-success {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #86efac;
+}
+
+.your-move-status-banner.is-error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
+
+/* --------------------------------------------------------------------------
+   6. Zone C: Bottom Taskbar Tab Dock (Windows 11-Inspired Persistent Tab)
+   -------------------------------------------------------------------------- */
+.desktop-taskbar-dock {
+  position: relative;
+  z-index: 100;
+  width: 100%;
+  height: calc(var(--taskbar-height) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  background: var(--taskbar-bg);
+  border-top: 1px solid var(--taskbar-border);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.taskbar-inner {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.2vw, 18px);
+  height: var(--taskbar-height);
+  padding: 0 1rem;
+}
+
+/* --- PC-Style Search Capsule (Left of Folders) --- */
+.taskbar-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: clamp(160px, 18vw, 220px);
+  height: 34px;
+  background: var(--search-pill-bg);
+  border: 1px solid var(--search-pill-border);
+  border-radius: 17px;
+  padding: 0 0.85rem;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: border-color var(--duration-fast) ease,
+              background-color var(--duration-fast) ease,
+              box-shadow var(--duration-fast) ease,
+              width 0.22s var(--ease-os);
+}
+
+.search-input-wrapper:hover {
+  border-color: var(--search-pill-hover-border);
+  background: var(--search-pill-hover-bg);
+}
+
+.search-input-wrapper:focus-within {
+  border-color: var(--search-pill-focus);
+  background: var(--search-pill-focus-bg);
+  box-shadow: var(--search-pill-focus-shadow);
+}
+
+.search-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--text-instruction);
+  flex-shrink: 0;
+  transition: color var(--duration-fast) ease;
+}
+
+.search-input-wrapper:focus-within .search-icon {
+  color: var(--accent-cyan);
+}
+
+.taskbar-search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font-editorial);
+  font-size: 0.8rem;
+  width: 100%;
+}
+
+.taskbar-search-input::placeholder {
+  color: var(--text-instruction);
+  font-size: 0.78rem;
+}
+
+.search-clear-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-instruction);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 2px 4px;
+  border-radius: 3px;
+  line-height: 1;
+}
+
+.search-clear-btn:hover {
+  color: var(--text-primary);
+}
+
+.search-shortcut-badge {
+  font-family: ui-monospace, monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  color: var(--text-instruction);
+  background: var(--search-badge-bg);
+  border: 1px solid var(--search-badge-border);
+  border-radius: 4px;
+  padding: 1px 4px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* --- Search Results Flyout Popover --- */
+.search-flyout {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  width: 320px;
+  background: var(--flyout-bg);
+  border: 1px solid var(--flyout-border);
+  border-radius: 9px;
+  box-shadow: var(--window-shadow);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  overflow: hidden;
+  z-index: 120;
+  animation: flyoutFadeUp 160ms var(--ease-os);
+}
+
+@keyframes flyoutFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.flyout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.95rem;
+  border-bottom: 1px solid var(--window-header-border);
+  background: var(--popup-header-bg);
+}
+
+.flyout-title {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-instruction);
+}
+
+.flyout-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.flyout-count {
+  font-size: 0.7rem;
+  font-family: monospace;
+  color: var(--text-instruction);
+}
+
+.flyout-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-instruction);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 2px 4px;
+  border-radius: 3px;
+  line-height: 1;
+  display: none; /* Shown on mobile */
+}
+
+.flyout-close-btn:hover {
+  color: var(--text-primary);
+}
+
+.search-results-list {
+  max-height: 280px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  touch-action: manipulation;
+  transition: background-color var(--duration-fast) ease;
+}
+
+.search-result-item:hover,
+.search-result-item.is-selected {
+  background-color: var(--search-result-hover);
+}
+
+.result-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  background: var(--search-icon-bg);
+  border: 1px solid var(--search-icon-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--accent-cyan);
+}
+
+.result-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.result-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  overflow: hidden;
+}
+
+.result-title {
+  font-size: 0.82rem;
+  font-weight: 450;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.result-title mark {
+  background: transparent;
+  color: var(--accent-cyan);
+  font-weight: 600;
+}
+
+.result-category {
+  font-size: 0.7rem;
+  color: var(--text-instruction);
+  white-space: nowrap;
+}
+
+.search-empty-state {
+  padding: 1.25rem 0.85rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-instruction);
+}
+
+/* --------------------------------------------------------------------------
+   7. Folder Navigation in Taskbar
+   -------------------------------------------------------------------------- */
+.folder-navigation {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+}
+
+/* Individual Folder Button */
+.folder-item {
+  position: relative;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  border-radius: 6px;
+  transition: background-color var(--duration-fast) ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.folder-item:hover {
+  background-color: var(--folder-item-hover-bg);
+}
+
+/* Folder Tooltip Label (Desktop Hover/Focus only) */
+.folder-label {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+  font-size: 0.78rem;
+  font-weight: 450;
+  letter-spacing: 0.02em;
+  color: var(--tooltip-text);
+  background: var(--tooltip-bg);
+  border: 1px solid var(--tooltip-border);
+  border-radius: 5px;
+  padding: 4px 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: opacity var(--duration-fast) var(--ease-os),
+              transform var(--duration-fast) var(--ease-os),
+              visibility var(--duration-fast);
+  z-index: 120;
+}
+
+.folder-label::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px 4px 0 4px;
+  border-style: solid;
+  border-color: var(--tooltip-bg) transparent transparent transparent;
+}
+
+/* Only trigger tooltip on real hover devices */
+@media (hover: hover) and (pointer: fine) {
+  .folder-item:hover .folder-label,
+  .folder-item:focus-visible .folder-label {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* On touchscreens, hide tooltip so it never gets stuck */
+@media (hover: none) or (pointer: coarse) {
+  .folder-label {
+    display: none !important;
+  }
+}
+
+/* Folder Icon Wrapper & SVG */
+.folder-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  transition: transform var(--duration-fast) var(--ease-os);
+}
+
+.folder-svg {
+  display: block;
+  overflow: visible;
+  flex-shrink: 0;
+  transition: transform var(--duration-fast) var(--ease-os), filter var(--duration-fast) ease, opacity var(--duration-fast) ease;
+}
+
+.folder-svg-mind {
+  width: 30px;
+  height: 30px;
+}
+
+.folder-svg-outputs {
+  width: 30px;
+  height: 30px;
+}
+
+.folder-svg-your-move {
+  width: 29px;
+  height: 29px;
+  color: var(--folder-your-move-color, rgba(255, 255, 255, 0.88));
+}
+
+.folder-item:hover .folder-svg-your-move {
+  color: var(--folder-your-move-hover, #ffffff);
+}
+
+.folder-item.is-active .folder-svg-your-move {
+  color: var(--folder-your-move-active, #ffffff);
+  filter: var(--folder-your-move-shadow, drop-shadow(0 0 6px rgba(56, 189, 248, 0.65)));
+}
+
+/* Explicit Light Mode / White Mode overrides for Your Move icon */
+:root[data-theme="light"] .folder-svg-your-move,
+[data-theme="light"] .folder-svg-your-move,
+body[data-theme="light"] .folder-svg-your-move,
+.theme-light .folder-svg-your-move {
+  color: #1e293b;
+}
+
+:root[data-theme="light"] .folder-item:hover .folder-svg-your-move,
+[data-theme="light"] .folder-item:hover .folder-svg-your-move,
+body[data-theme="light"] .folder-item:hover .folder-svg-your-move,
+.theme-light .folder-item:hover .folder-svg-your-move {
+  color: #0f172a;
+}
+
+:root[data-theme="light"] .folder-item.is-active .folder-svg-your-move,
+[data-theme="light"] .folder-item.is-active .folder-svg-your-move,
+body[data-theme="light"] .folder-item.is-active .folder-svg-your-move,
+.theme-light .folder-item.is-active .folder-svg-your-move {
+  color: #0078d4;
+  filter: drop-shadow(0 0 4px rgba(0, 120, 212, 0.35));
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .folder-svg-your-move {
+    color: #1e293b;
+  }
+
+  :root:not([data-theme="dark"]) .folder-item:hover .folder-svg-your-move {
+    color: #0f172a;
+  }
+
+  :root:not([data-theme="dark"]) .folder-item.is-active .folder-svg-your-move {
+    color: #0078d4;
+    filter: drop-shadow(0 0 4px rgba(0, 120, 212, 0.35));
+  }
+}
+
+.folder-svg-linkedin {
+  width: 30px;
+  height: 30px;
+}
+
+/* Fallback legacy folder styles for titlebar icons */
+.folder-tab-back {
+  fill: var(--folder-back-fill);
+  stroke: var(--folder-stroke);
+  stroke-width: 1.5;
+  transition: stroke var(--duration-normal) ease, fill var(--duration-normal) ease;
+}
+
+.folder-divider-sheet {
+  stroke: var(--folder-divider);
+  stroke-width: 1.2;
+  opacity: 0.4;
+}
+
+.folder-front-flap {
+  fill: var(--folder-front-fill);
+  stroke: var(--folder-stroke);
+  stroke-width: 1.5;
+  transition: stroke var(--duration-normal) ease, fill var(--duration-normal) ease;
+}
+
+.folder-item:hover .folder-icon-wrapper {
+  transform: translateY(-2px);
+}
+
+.folder-item:active .folder-icon-wrapper {
+  transform: translateY(0) scale(0.96);
+}
+
+.folder-item:hover .folder-tab-back,
+.folder-item:hover .folder-front-flap {
+  stroke: var(--folder-stroke-hover);
+  fill: var(--folder-hover-fill);
+}
+
+.folder-item.is-active {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.folder-item.is-active .folder-tab-back,
+.folder-item.is-active .folder-front-flap {
+  stroke: var(--folder-stroke-active);
+  fill: var(--folder-active-fill);
+}
+
+/* Windows 11-Style Taskbar Active Indicator Pill (Underneath Folder) */
+.taskbar-active-pill {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+  background-color: var(--accent-cyan);
+  box-shadow: 0 0 8px var(--accent-cyan);
+  opacity: 0;
+  transition: opacity var(--duration-normal) ease, width var(--duration-normal) ease;
+}
+
+.folder-item.is-active .taskbar-active-pill {
+  opacity: 1;
+}
+
+/* Focus States */
+.folder-item:focus-visible,
+.win-btn:focus-visible,
+.flyout-close-btn:focus-visible {
+  outline: 2px solid var(--folder-stroke-active);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ==========================================================================
+   Windows 11 Start Button & Start Menu Pop-up: The Human
+   - Positioned to the left of the search capsule on the taskbar
+   - Floats OVER the currently active window/section without replacing it
+   - Fixed pop-up window size; inner contents scroll smoothly
+   - Overview hero at top -> Details specs -> Experience timeline below
+   - Windows 11-style bottom footer bar with avatar, "The Human", and power button
+   ========================================================================== */
+
+/* --- Taskbar Start Button (Circular Avatar Placeholder) --- */
+.taskbar-start-btn {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+.taskbar-start-btn:hover {
+  transform: scale(1.08);
+}
+
+.taskbar-start-btn:active {
+  transform: scale(0.95);
+}
+
+.start-btn-avatar-ring {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--start-btn-ring-border);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  background: var(--start-btn-ring-bg);
+  transition: border-color 0.22s ease, box-shadow 0.22s ease;
+  overflow: visible;
+}
+
+.start-btn-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.start-btn-pulse-dot {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 8.5px;
+  height: 8.5px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 1.5px solid var(--pulse-dot-border);
+  box-shadow: 0 0 6px #22c55e;
+  z-index: 2;
+}
+
+.taskbar-start-btn:hover .start-btn-avatar-ring,
+.taskbar-start-btn.is-active .start-btn-avatar-ring,
+.taskbar-start-btn[aria-expanded="true"] .start-btn-avatar-ring {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 14px rgba(36, 163, 222, 0.45);
+}
+
+/* Subtle Active Indicator Pill under Start Button (Windows 11 Style) */
+.start-btn-glow {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent-cyan);
+  box-shadow: 0 0 8px var(--accent-cyan);
+  opacity: 0;
+  transition: opacity 0.2s ease, width 0.2s ease;
+}
+
+.taskbar-start-btn.is-active .start-btn-glow,
+.taskbar-start-btn[aria-expanded="true"] .start-btn-glow {
+  opacity: 1;
+  width: 16px;
+}
+
+.taskbar-start-btn:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 3px;
+}
+
+/* --- Backdrop for click-outside dismissal --- */
+.start-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1040;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  overscroll-behavior: contain;
+  transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.start-menu-backdrop.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* --- Windows 11 Start Menu Pop-up Frame --- */
+.start-menu-popup {
+  position: fixed;
+  z-index: 1050;
+  bottom: calc(var(--taskbar-height) + var(--safe-bottom) + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(16px) scale(0.97);
+  transform-origin: bottom center;
+  width: min(620px, calc(100vw - 28px));
+  height: min(650px, calc(100vh - var(--taskbar-height) - var(--safe-bottom) - 28px));
+  height: min(650px, calc(100dvh - var(--taskbar-height) - var(--safe-bottom) - 28px));
+  background: var(--start-popup-bg);
+  backdrop-filter: blur(36px) saturate(180%);
+  -webkit-backdrop-filter: blur(36px) saturate(180%);
+  border: 1px solid var(--start-popup-border);
+  border-radius: 16px;
+  box-shadow: var(--window-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.24s ease;
+  box-sizing: border-box;
+}
+
+.start-menu-popup.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+/* --- Start Menu Header & Jump Navigation --- */
+.start-menu-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--window-header-border);
+  background: var(--start-header-bg);
+  gap: 0.75rem;
+}
+
+.start-header-left {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+}
+
+.start-badge-eyebrow {
+  display: none;
+}
+
+.start-nav-pills {
+  display: inline-flex;
+  align-items: center;
+  background: var(--start-pills-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 2px 3px;
+  gap: 3px;
+}
+
+.start-nav-pill {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-instruction);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.74rem;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.start-nav-pill:hover {
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.start-nav-pill.is-active {
+  color: #ffffff;
+  background: var(--accent-cyan);
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(36, 163, 222, 0.35);
+}
+
+.start-close-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.15rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+.start-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+/* --- Scrollable Body Container (Fixed Frame, Content Scrolls from Top) --- */
+.start-menu-scrollable {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: 1.6rem 1.85rem 2.2rem;
+  box-sizing: border-box;
+}
+
+.start-menu-scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.start-menu-scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.start-menu-scrollable::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+.start-menu-scrollable::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Content Sections inside Start Menu */
+.start-content-section {
+  position: relative;
+}
+
+.start-content-section + .start-content-section {
+  margin-top: 2.25rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--card-border);
+}
+
+/* --- Section 1: Overview (Top Hero in Start Menu: Left Name/Lead, Right Photo Placeholder) --- */
+.start-overview-grid {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.start-overview-grid .start-overview-lead {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: left;
+}
+
+.start-overview-name {
+  font-family: var(--font-editorial);
+  font-size: clamp(1.4rem, 2.8vw, 1.75rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin: 0.35rem 0 0.45rem 0;
+  line-height: 1.15;
+}
+
+.start-overview-grid .start-overview-hero {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0;
+  padding-top: 0.2rem;
+}
+
+.start-avatar-frame {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.65rem;
+  flex-shrink: 0;
+}
+
+.start-avatar-glow-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  animation: avatarPulse 4s infinite ease-in-out;
+  pointer-events: none;
+}
+
+.start-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent-blue);
+  box-shadow: 0 0 20px var(--accent-glow);
+  position: relative;
+  z-index: 1;
+}
+
+.human-headline.start-headline {
+  font-size: clamp(1.02rem, 1.8vw, 1.18rem);
+  line-height: 1.35;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin-top: 0.25rem;
+  margin-bottom: 0.75rem;
+  color: rgba(226, 232, 240, 0.92);
+}
+
+.human-headline.start-headline .headline-part {
+  display: block; /* Guarantees exactly 2 lines as specified */
+}
+
+.start-action-bar {
+  margin-top: 1.25rem;
+}
+
+/* --- Section 2: Details Specs in Start Menu --- */
+.start-section-details .human-specs-grid {
+  margin-top: 1.25rem;
+}
+
+/* --- Section 3: Experience Timeline in Start Menu --- */
+.start-journey-table {
+  margin: 1.25rem 0 0.5rem 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure Journey Grid has comfortable spacing inside the Start Menu */
+.start-journey-table .journey-item {
+  grid-template-columns: 112px 18px 1fr;
+  gap: 0.75rem;
+}
+
+/* --------------------------------------------------------------------------
+   8. Responsive Design & Mobile Compatibility
+   -------------------------------------------------------------------------- */
+/* Tablet & Medium Screens */
+@media (max-width: 820px) {
+  .headline-primary {
+    font-size: clamp(1.85rem, 5.5vw, 2.5rem);
+  }
+
+  .index-row {
+    grid-template-columns: 36px 1fr auto;
+    gap: 0.8rem;
+  }
+
+  .row-format {
+    display: none;
+  }
+
+  .human-dossier {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Smart Mobile Dock & Compact Search Pill (Phones <= 600px) */
+@media (max-width: 600px) {
+  /* Start Menu Mobile Viewport Adjustments */
+  .start-menu-popup {
+    width: calc(100vw - 16px);
+    bottom: calc(var(--taskbar-height) + var(--safe-bottom) + 8px);
+    border-radius: 14px;
+    height: min(600px, calc(100vh - var(--taskbar-height) - var(--safe-bottom) - 16px));
+    height: min(600px, calc(100dvh - var(--taskbar-height) - var(--safe-bottom) - 16px));
+  }
+
+  .start-menu-scrollable {
+    padding: 1.2rem 1.15rem 1.6rem;
+  }
+
+  .start-nav-pills {
+    padding: 1px 2px;
+  }
+
+  .start-nav-pill {
+    padding: 3px 8px;
+    font-size: 0.68rem;
+  }
+
+  .start-journey-table .journey-item {
+    grid-template-columns: 88px 14px 1fr;
+    gap: 0.5rem;
+  }
+
+  .start-badge-eyebrow {
+    display: none;
+  }
+
+  /* Your Move Floating Window Mobile Viewport Adjustments */
+  .your-move-window {
+    width: calc(100vw - 20px);
+    max-height: min(650px, calc(100vh - var(--taskbar-height) - var(--safe-bottom) - 16px));
+    max-height: min(650px, calc(100dvh - var(--taskbar-height) - var(--safe-bottom) - 16px));
+    border-radius: 12px;
+  }
+
+  .your-move-body {
+    padding: 1.25rem 1.25rem 1.4rem;
+  }
+
+  .your-move-headline {
+    font-size: 1.45rem;
+  }
+
+  .your-move-footer-bar {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .taskbar-inner {
+    width: 100%;
+    max-width: 480px;
+    justify-content: center;
+    gap: clamp(0.5rem, 3.5vw, 1.25rem);
+    padding: 0 0.5rem;
+  }
+
+  /* Compact Circular Search Icon Button on Mobile */
+  .search-input-wrapper {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    padding: 0;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .search-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .taskbar-search-input {
+    display: none;
+    width: 0;
+  }
+
+  .search-shortcut-badge {
+    display: none;
+  }
+
+  /* When search is tapped and open on mobile */
+  .taskbar-search-container.is-mobile-open .search-input-wrapper {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    width: calc(100% - 16px);
+    height: 38px;
+    border-radius: 19px;
+    padding: 0 12px;
+    background: rgba(45, 48, 52, 0.98);
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 16px rgba(36, 163, 222, 0.25);
+    z-index: 150;
+  }
+
+  .taskbar-search-container.is-mobile-open .taskbar-search-input {
+    display: block;
+    width: 100%;
+    font-size: 0.86rem;
+  }
+
+  .taskbar-search-container.is-mobile-open .search-clear-btn {
+    display: block;
+    font-size: 0.85rem;
+    padding: 4px;
+  }
+
+  /* Mobile Search Flyout: Full Width Bottom Sheet */
+  .search-flyout {
+    position: fixed;
+    bottom: calc(var(--taskbar-height) + var(--safe-bottom) + 8px);
+    left: 10px;
+    right: 10px;
+    width: auto;
+    max-width: 460px;
+    margin: 0 auto;
+    max-height: 52vh;
+    border-radius: 12px;
+  }
+
+  .flyout-close-btn {
+    display: inline-block;
+  }
+
+  /* Folder Button on Mobile */
+  .folder-navigation {
+    gap: 4px;
+  }
+
+  .folder-item {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    padding: 0;
+  }
+
+  .folder-icon-wrapper {
+    width: 30px;
+    height: 30px;
+  }
+
+  .taskbar-active-pill {
+    width: 14px;
+    height: 3px;
+    bottom: 2px;
+  }
+
+  /* Window Tab Titlebar on Mobile */
+  .window-titlebar {
+    height: 40px;
+    padding: 0 0.85rem;
+  }
+
+  .titlebar-path {
+    max-width: 50vw;
+    font-size: 0.72rem;
+  }
+
+  .win-btn {
+    width: 32px;
+    height: 30px;
+  }
+
+  /* Window Content on Mobile */
+  .window-viewport-body {
+    padding: 1.25rem 0.9rem 2rem 0.9rem;
+  }
+
+  .section-header {
+    margin-bottom: 1.2rem;
+  }
+
+  .section-title {
+    font-size: clamp(1.7rem, 6vw, 2.2rem);
+  }
+
+  .section-subtitle {
+    font-size: 0.88rem;
+  }
+
+  /* Mobile Responsive Outputs Rows */
+  .index-row {
+    grid-template-columns: 24px 1fr;
+    grid-template-rows: auto auto;
+    gap: 0.25rem 0.6rem;
+    padding: 0.85rem 0.5rem;
+  }
+
+  .row-num {
+    grid-row: 1 / 3;
+    align-self: flex-start;
+    padding-top: 2px;
+    font-size: 0.75rem;
+  }
+
+  .row-category {
+    grid-column: 2 / 3;
+    font-size: 0.88rem;
+    font-weight: 450;
+  }
+
+  .row-format {
+    display: block;
+    grid-column: 2 / 3;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    line-height: 1.35;
+  }
+
+  .row-status {
+    display: inline-block;
+    grid-column: 2 / 3;
+    justify-self: flex-start;
+    margin-top: 4px;
+    font-size: 0.68rem;
+    padding: 2px 6px;
+  }
+
+  /* Mobile Dossier & Move Cards */
+  .dossier-card {
+    padding: 1rem 1.1rem;
+    gap: 0.35rem;
+  }
+
+  .dossier-value {
+    font-size: 0.88rem;
+  }
+
+  .move-card {
+    padding: 1.1rem 1.2rem;
+    gap: 0.35rem;
+  }
+}
+
+/* Very Small Mobile Screens (<= 360px: e.g. iPhone SE, Galaxy Z Flip cover) */
+@media (max-width: 360px) {
+  .headline-primary {
+    font-size: 1.55rem;
+  }
+
+  .folder-icon-wrapper {
+    width: 34px;
+    height: 28px;
+  }
+
+  .folder-navigation {
+    gap: 4px;
+  }
+
+  .taskbar-inner {
+    padding: 0 0.25rem;
+    gap: 6px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. Reduced Motion Accessibility
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .desktop-window-tab,
+  .mind-content,
+  .folder-icon-wrapper {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .guidance-arrow .arrow-stem,
+  .guidance-arrow .arrow-head {
+    stroke-dashoffset: 0 !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ==========================================================================
+   10. The Outputs: App Window, 1.5s Loader, Dark Hero & Per Appelgren Gallery
+   ========================================================================== */
+
+/* --- Custom Viewport Body for The Outputs --- */
+.outputs-viewport-body {
+  padding: 0 !important;
+  overflow-y: auto !important;
+  scroll-behavior: auto !important;
+  position: relative;
+  background-color: var(--window-bg);
+}
+
+/* --- Outputs App Loader Overlay (Disabled to prevent blocking interactions) --- */
+.outputs-app-loader {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+.loader-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.loader-spinner-orbit {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-spinner-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(36, 163, 222, 0.2);
+  border-top-color: var(--accent-cyan);
+  box-shadow: 0 0 16px rgba(36, 163, 222, 0.35);
+  animation: outputsLoaderSpin 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.loader-spinner-core {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--accent-cyan);
+  box-shadow: 0 0 12px var(--accent-cyan);
+  animation: outputsCorePulse 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes outputsLoaderSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes outputsCorePulse {
+  from { transform: scale(0.7); opacity: 0.6; }
+  to { transform: scale(1.15); opacity: 1; }
+}
+
+.loader-text-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.loader-brand {
+  font-family: var(--font-editorial);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.loader-status {
+  font-family: var(--font-editorial);
+  font-size: 0.78rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+}
+
+/* --- Dark Hero Section for The Outputs --- */
+.outputs-hero-dark {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - var(--taskbar-height) - 42px);
+  min-height: calc(100dvh - var(--taskbar-height) - 42px);
+  background: var(--bg-canvas);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  z-index: 5;
+  box-sizing: border-box;
+  transition: opacity 0.25s ease-out;
+}
+
+.outputs-hero-content {
+  max-width: 860px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.outputs-hero-dark .outputs-eyebrow {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: clamp(0.72rem, 1vw, 0.82rem);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-cyan);
+}
+
+.outputs-hero-dark .outputs-headline-primary {
+  font-family: var(--font-editorial);
+  font-size: clamp(2.2rem, 4.4vw, 3.6rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.outputs-hero-dark .outputs-supporting-text {
+  font-family: var(--font-editorial);
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.outputs-scroll-cue {
+  position: absolute;
+  bottom: clamp(1.5rem, 3.5vh, 2.8rem);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.outputs-scroll-cue:hover {
+  transform: translateX(-50%) translateY(2px);
+  opacity: 1;
+}
+
+.outputs-scroll-cue:hover .cue-text {
+  color: var(--accent-cyan);
+}
+
+.outputs-scroll-cue .cue-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-instruction);
+}
+
+.outputs-scroll-cue .cue-indicator {
+  width: 20px;
+  height: 32px;
+  border: 1.5px solid var(--cue-indicator-border);
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  padding-top: 5px;
+}
+
+.outputs-scroll-cue .cue-pill {
+  width: 3px;
+  height: 6px;
+  background-color: var(--accent-cyan);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(36, 163, 222, 0.7);
+  animation: outputsCueBounce 1.8s ease-in-out infinite;
+}
+
+@keyframes outputsCueBounce {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateY(8px);
+    opacity: 0.3;
+  }
+}
+
+/* --- Interactive Scroll Gallery Track (Dark in Light Mode, White in Dark Mode) --- */
+.outputs-gallery-track {
+  position: relative;
+  width: 100%;
+  height: 600vh; /* Smooth, natural 1-wheel-roll pacing per card peel */
+  background: var(--gallery-track-bg);
+  transition: background 0.25s ease;
+}
+
+.outputs-sticky-scene {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: calc(100vh - var(--taskbar-height) - 42px);
+  height: calc(100dvh - var(--taskbar-height) - 42px);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gallery-track-bg);
+  perspective: 680px; /* Enhanced wide-angle 3D perspective distortion */
+  perspective-origin: 50% 50%;
+  transition: background 0.25s ease;
+}
+
+/* Subtle Background Elements & Dot Grid */
+.outputs-bg-elements {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  will-change: transform;
+}
+
+.outputs-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(var(--gallery-grid-dot) 1.2px, transparent 1.2px);
+  background-size: 28px 28px;
+}
+
+.outputs-bg-counter {
+  position: absolute;
+  bottom: 1.5rem;
+  right: clamp(1.25rem, 4vw, 4rem);
+  font-family: ui-monospace, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--gallery-counter-color);
+  font-weight: 500;
+  transition: color 0.25s ease;
+}
+
+/* Giant Background Typography (Crossfading Behind Center Card) */
+.outputs-bg-titles {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.bg-title-word {
+  position: absolute;
+  font-family: var(--font-editorial);
+  font-size: clamp(4.5rem, 14vw, 15rem);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 0.88;
+  text-align: center;
+  color: var(--gallery-title-color);
+  white-space: nowrap;
+  user-select: none;
+  opacity: 0;
+  transform: translateY(8px) scale(0.96);
+  transition: opacity 0.35s ease, transform 0.4s var(--ease-os), color 0.25s ease;
+}
+
+.bg-title-word.is-multiline {
+  width: 100%;
+  max-width: 100vw;
+  padding: 0 clamp(1.5rem, 5vw, 6rem);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 0.82;
+  white-space: normal;
+}
+
+.bg-title-word.is-multiline .line-left {
+  display: block;
+  width: 100%;
+  text-align: left;
+  align-self: flex-start;
+}
+
+.bg-title-word.is-multiline .line-right {
+  display: block;
+  width: 100%;
+  text-align: right;
+  align-self: flex-end;
+}
+
+.bg-title-word.is-active {
+  opacity: 0.94;
+  transform: translateY(0) scale(1);
+}
+
+/* 5 Interactive Image Cards Stage in 3D Space */
+.outputs-cards-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Paper / Pamphlet Editorial Aesthetic in 3D Perspective */
+.outputs-card {
+  position: absolute;
+  width: clamp(270px, 26vw, 410px);
+  aspect-ratio: 3 / 4.15;
+  height: auto;
+  max-height: calc(100vh - 150px);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--gallery-card-bg);
+  outline: 1px solid var(--gallery-card-border);
+  box-shadow: var(--gallery-card-shadow);
+  text-decoration: none;
+  cursor: pointer;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transform-origin: center center;
+  backface-visibility: hidden;
+  transition: box-shadow 0.28s ease, background-color 0.25s ease;
+}
+
+/* Stacking Order Defaults (Ensures Card 0: Static Creatives is strictly on top of deck) */
+#card-0 { z-index: 30; }
+#card-1 { z-index: 20; }
+#card-2 { z-index: 10; }
+#card-3 { z-index: 8; }
+#card-4 { z-index: 6; }
+
+.outputs-card:hover {
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.12), 0 20px 48px rgba(0, 0, 0, 0.16);
+}
+
+.card-visual-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  pointer-events: none;
+  transition: transform 0.4s var(--ease-os);
+}
+
+.outputs-card:hover .card-image {
+  transform: scale(1.035);
+}
+
+/* Floating Circular Action Badge (↗) */
+.card-action-badge {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--gallery-badge-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--gallery-badge-color);
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.24s ease, box-shadow 0.24s ease;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.outputs-card:hover .card-action-badge {
+  transform: scale(1.08) translate(2px, -2px);
+  background: #ffffff;
+  color: #18181b;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+/* Subtle Natural Bottom Vignette for Caption Legibility */
+.card-overlay-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.68) 0%, rgba(0, 0, 0, 0.15) 28%, transparent 55%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.card-caption-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.15rem 1.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #ffffff;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.caption-num {
+  font-family: 'Inter', ui-monospace, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.caption-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+/* Progress Dots Dock */
+.outputs-progress-dock {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 20;
+}
+
+.progress-dot {
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--gallery-progress-dot);
+  transition: background-color 0.24s ease, width 0.24s ease;
+}
+
+.progress-dot.is-active {
+  background: var(--gallery-progress-dot-active);
+  width: 36px;
+}
+
+/* Responsive adjustments for tablet & mobile */
+@media (max-width: 820px) {
+  .outputs-card {
+    width: clamp(260px, 46vw, 360px);
+    aspect-ratio: 3 / 4.15;
+    height: auto;
+  }
+
+  .bg-title-word {
+    font-size: clamp(3.2rem, 14vw, 7rem);
+  }
+}
+
+@media (max-width: 600px) {
+  .outputs-card {
+    width: clamp(250px, 78vw, 320px);
+    aspect-ratio: 3 / 4.15;
+    height: auto;
+  }
+
+  .card-action-badge {
+    width: 36px;
+    height: 36px;
+    font-size: 1.05rem;
+    top: 0.9rem;
+    right: 0.9rem;
+  }
+
+  .card-caption-bar {
+    padding: 0.9rem 1.1rem;
+  }
+
+  .bg-title-word {
+    font-size: clamp(2.4rem, 12vw, 4.2rem);
+  }
+}
+
+/* ==========================================================================
+   Fluid Directional Arrow Cursor (Inspired by arunnm.com / The Ride)
+   ========================================================================== */
+.custom-cursor__ring-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 999999;
+  mix-blend-mode: difference;
+  will-change: transform;
+  width: 0;
+  height: 0;
+  transform: translate3d(-100px, -100px, 0); /* parked off-screen until first pointermove */
+}
+
+/* Soft, subtle vapor trail behind arrow tail */
+.custom-cursor__trail-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 999998;
+  mix-blend-mode: difference;
+  width: 0;
+  height: 0;
+}
+
+.custom-cursor__trail-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  background: #ffffff;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  will-change: transform, opacity;
+  transform: translate3d(-100px, -100px, 0);
+  opacity: 0;
+  filter: blur(0.5px);
+}
+
+.custom-cursor__ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 13px;
+  height: 13px;
+  margin: -6.5px 0 0 -6.5px; /* center on the pointer point */
+  background: #ffffff;
+  /* Right-pointing arrow/triangle with 24 polygon vertices (8 per side) */
+  clip-path: polygon(
+    0.0% 0.0%, 12.5% 6.2%, 25.0% 12.5%, 37.5% 18.8%, 50.0% 25.0%, 62.5% 31.2%, 75.0% 37.5%, 87.5% 43.8%,
+    100.0% 50.0%, 87.5% 56.2%, 75.0% 62.5%, 62.5% 68.8%, 50.0% 75.0%, 37.5% 81.2%, 25.0% 87.5%, 12.5% 93.8%,
+    0.0% 100.0%, 0.0% 87.5%, 0.0% 75.0%, 0.0% 62.5%, 0.0% 50.0%, 0.0% 37.5%, 0.0% 25.0%, 0.0% 12.5%
+  );
+  box-sizing: border-box;
+  transition:
+    width 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    height 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    margin 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    clip-path 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 180ms ease;
+  will-change: transform, width, height, clip-path;
+}
+
+/* Hover morph: over interactive elements, morph into a sleek ~16px circle */
+.custom-cursor__ring.is-hovering {
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  clip-path: polygon(
+    14.6% 14.6%, 25.0% 6.7%, 37.1% 1.7%, 50.0% 0.0%, 62.9% 1.7%, 75.0% 6.7%, 85.4% 14.6%, 93.3% 25.0%,
+    98.3% 37.1%, 100.0% 50.0%, 98.3% 62.9%, 93.3% 75.0%, 85.4% 85.4%, 75.0% 93.3%, 62.9% 98.3%, 50.0% 100.0%,
+    37.1% 98.3%, 25.0% 93.3%, 14.6% 85.4%, 6.7% 75.0%, 1.7% 62.9%, 0.0% 50.0%, 1.7% 37.1%, 6.7% 25.0%
+  );
+}
+
+/* Hide custom cursor when mouse leaves window or user is typing in text fields */
+body.cursor-hidden .custom-cursor__ring-wrap,
+body.cursor-hidden .custom-cursor__trail-wrap,
+.custom-cursor__ring.is-typing {
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+/* Hide native cursor when custom cursor is active, but retain text cursor on editable fields */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
+}
+
+html.has-custom-cursor input:not([type="button"]):not([type="submit"]):not([type="checkbox"]):not([type="radio"]),
+html.has-custom-cursor textarea,
+html.has-custom-cursor [contenteditable="true"] {
+  cursor: text !important;
+}
+
+/* Reduced motion fallback */
+@media (prefers-reduced-motion: reduce) {
+  .custom-cursor__ring {
+    transition: none;
+  }
+}
+
+/* Touchscreens and mobile devices: disable custom cursor completely */
+@media (hover: none), (pointer: coarse) {
+  .custom-cursor__ring-wrap,
+  .custom-cursor__trail-wrap {
+    display: none !important;
+  }
+}
+
+
+
